@@ -1,3 +1,37 @@
-require('require-dir')('./gulp', {recurse: true});
-var _app = require('adaptive-pixel-perfect');
-_app.start(3010, "design", 3000);
+'use strict';
+const gulp = require('gulp');
+
+//Можно в 1 модуль передать несколько задач в виде массива
+
+require('./index')(function(dev) {
+    return {
+        general: {
+            base_src: 'src',
+            base_dest: 'public',
+
+            clean: false,//ВРЕМЕННО
+
+            minification: !dev,
+            sourcemaps: dev,
+
+            watch: dev,
+
+            browserSync: dev,
+            browserSyncOptions: {},
+
+            adaptivePixelPerfect: dev,
+            adaptivePixelPerfectOptions: {
+                port: 3010,
+                design: "design"
+            }
+        },
+
+        //sass, scss, less, styl, css
+        styles: [
+            {name: 'sass', src: 'sass/**/*.sass', dest: 'styles', disabled: false}
+        ]
+    };
+});
+
+gulp.task('default', ['easy:gulp:by:orel']);
+gulp.task('production', ['easy:gulp:by:orel:production']);

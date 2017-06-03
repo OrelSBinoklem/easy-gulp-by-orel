@@ -1,6 +1,6 @@
 {
   "name": "easy-gulp-by-orel",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "Simple project collector on gulp",
   "author": "orel-s-binoklem",
   "license": "MIT",
@@ -10,10 +10,11 @@
     "url": "https://github.com/OrelSBinoklem/easy-gulp-by-orel.git"
   },
   "directories": {
-    "test": "tests"
+
   },
   "files": [
-    "index.js"
+    "index.js",
+    "gulp"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -22,9 +23,25 @@
     "gulp"
   ],
   "dependencies": {
-
+    "adaptive-pixel-perfect": "^0.4.1",
+    "browser-sync": "^2.18.12",
+    "del": "^2.2.2",
+    "extend": "^3.0.1",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^4.0.0",
+    "gulp-changed": "^3.1.0",
+    "gulp-filter": "^5.0.0",
+    "gulp-if": "^2.0.2",
+    "gulp-less": "^3.3.0",
+    "gulp-load-plugins": "^1.5.0",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-notify": "^3.0.0",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-stylus": "^2.6.0",
+    "require-dir": "^0.3.1",
+    "run-sequence": "^1.2.2",
+    "stream-combiner2": "^1.1.1"
   },
-  "devDependencies": {
-
-  }
+  "devDependencies": {}
 }
