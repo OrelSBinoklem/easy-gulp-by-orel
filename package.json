@@ -9,9 +9,7 @@
     "type": "git",
     "url": "https://github.com/OrelSBinoklem/easy-gulp-by-orel.git"
   },
-  "directories": {
-
-  },
+  "directories": {},
   "files": [
     "index.js",
     "gulp"
@@ -23,7 +21,7 @@
     "gulp"
   ],
   "dependencies": {
-    "adaptive-pixel-perfect": "^0.4.1",
+    "adaptive-pixel-perfect": "^0.5.0",
     "browser-sync": "^2.18.12",
     "del": "^2.2.2",
     "extend": "^3.0.1",

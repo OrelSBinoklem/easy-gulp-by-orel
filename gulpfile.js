@@ -28,7 +28,10 @@ require('./index')(function(dev) {
 
         //sass, scss, less, styl, css
         styles: [
-            {name: 'sass', src: 'sass/**/*.sass', dest: 'styles', disabled: false}
+            [
+                {name: 'sass2', src: 'sass/**/case-dostaevsky.sass', dest: 'styles2', autoprefixer: true, disabled: false},
+                {name: 'sass', src: 'sass/**/*.sass', dest: 'styles', autoprefixer: true, disabled: false}
+            ]
         ]
     };
 });

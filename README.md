@@ -19,7 +19,7 @@ require('easy-gulp-by-orel')(function(dev) {
             base_src: 'src',
             base_dest: 'public',
 
-            clean: false,//ВРЕМЕННО
+            clean: !dev,
 
             minification: !dev,
             sourcemaps: dev,
