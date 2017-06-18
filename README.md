@@ -38,7 +38,10 @@ require('easy-gulp-by-orel')(function(dev) {
 
         //sass, scss, less, styl, css
         styles: [
-            {name: 'sass', src: 'sass/**/*.sass', dest: 'styles', disabled: false}
+            [
+                {name: 'sass2', src: 'sass/**/case-dostaevsky.sass', dest: 'styles2', autoprefixer: true, disabled: false},
+                {name: 'sass', src: 'sass/**/*.sass', dest: 'styles', autoprefixer: true, disabled: false}
+            ]
         ]
     };
 });
@@ -51,6 +54,7 @@ gulp.task('production', ['easy:gulp:by:orel:production']);
 
 | Release | Notes |
 | --- | --- |
+| 0.0.1 | Add two level array related tasks (ignore files before tasks) |
 | 0.0.0 | Pre alpha release |
 
 ## Licence
