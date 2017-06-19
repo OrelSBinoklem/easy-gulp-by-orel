@@ -25,6 +25,7 @@
     "browser-sync": "^2.18.12",
     "del": "^2.2.2",
     "extend": "^3.0.1",
+    "global-prefix": "^0.1.5",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^4.0.0",
     "gulp-changed": "^3.1.0",
@@ -37,6 +38,7 @@
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.0",
     "gulp-stylus": "^2.6.0",
+    "multimatch": "^2.1.0",
     "require-dir": "^0.3.1",
     "run-sequence": "^1.2.2",
     "stream-combiner2": "^1.1.1"

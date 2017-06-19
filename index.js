@@ -70,7 +70,7 @@ var __ = function(config) {
                             //Вложенный массив взаимосвязанных задач
                             var cascadeMinimatchPatterns = [];
                             level_two.forEach(function(options) {
-                                options = combineAndjoinSrcOptions(options);
+                                options = combineGlobalLocal_preConcateBaseSrcInSrcAndAddWatchPattern__options(options);
 
                                 options.ignoreFiles = cascadeMinimatchPatterns.slice();
 
@@ -80,25 +80,30 @@ var __ = function(config) {
                             });
                         } else {
                             //Массив задач
-                            level_two = combineAndjoinSrcOptions(level_two);
+                            level_two = combineGlobalLocal_preConcateBaseSrcInSrcAndAddWatchPattern__options(level_two);
                             taskAndWatcher(level_two.name, name, level_two);
                         }
                     });
                 } else {
                     //Одна задача один обьект
-                    var options = combineAndjoinSrcOptions(config[name]);
+                    var options = combineGlobalLocal_preConcateBaseSrcInSrcAndAddWatchPattern__options(config[name]);
                     taskAndWatcher(options.name, name, options);
                 }
             }
         }
         taskDependencies.push(casualTasks);
 
-        function combineAndjoinSrcOptions(options) {
+        function combineGlobalLocal_preConcateBaseSrcInSrcAndAddWatchPattern__options(options) {
             //Совмещаем глобальные опции с опциями модуля
             options = extend({}, cfgg, options);
 
             //Прибавляем к пути src модуля путь base_src, если он есть
-            options.src = joinBaseSrcAndSrc(options);
+            options.src = preConcateBaseSrc(options, options.src);
+
+            //Прибавляем к пути addWatch путь base_src, если он есть
+            if("addWatch" in options) {
+                options.addWatch = preConcateBaseSrc(options, options.addWatch);
+            }
 
             return options;
         }
@@ -174,15 +179,15 @@ var __ = function(config) {
         });
     }
 
-    function joinBaseSrcAndSrc(options) {
+    function preConcateBaseSrc(options, pattern) {
         if('base_src' in options) {
-            if(Array.isArray(options.src)) {
-                return options.src.map(function(src){return pathJoin(options.base_src, src)});
+            if(Array.isArray(pattern)) {
+                return pattern.map(function(src){return pathJoin(options.base_src, src)});
             } else {
-                return pathJoin(options.base_src, options.src);
+                return pathJoin(options.base_src, pattern);
             }
         } else {
-            return options.src;
+            return pattern;
         }
     }
 };

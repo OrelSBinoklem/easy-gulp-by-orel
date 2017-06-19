@@ -5,7 +5,7 @@ const gulp = require('gulp');
 const combine = require('stream-combiner2').obj;
 const extend = require('extend');
 const pathJoin = require('../path.join.js');
-const through2 = require("through2").obj;
+const ignoreFiles = require("../ignore-files");
 
 module.exports = function(options) {
 
@@ -23,18 +23,7 @@ module.exports = function(options) {
         var stream = combine(
                 gulp.src(options.src),
 
-                $.if("ignoreFiles" in options, combine.apply(null, (function(el) {
-                    var arrTasks = [];
-                    options.ignoreFiles.forEach(function(el) {
-                        var filter = $.filter(el, {restore: true});
-                        arrTasks.push(filter);
-                        arrTasks.push(through2(function(file, enc, callback){
-                            callback();
-                        }));
-                        arrTasks.push(filter.restore);
-                    });
-                    return arrTasks;
-                })())),
+                $.if("ignoreFiles" in options, ignoreFiles.stream(options.ignoreFiles)),
 
                 $.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest, {extension: '.css'}),
 
