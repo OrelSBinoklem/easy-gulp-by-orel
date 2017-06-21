@@ -18,6 +18,10 @@ module.exports = function(options) {
         }
     }, options);
 
+    if(!("data" in options.pugOptions) && "pugData" in options && !!options.pugData) {
+        options.pugOptions.data = require('base_src' in options ? pathJoin(process.cwd(), options.base_src, options.pugData) : pathJoin(process.cwd(), options.pugData));
+    }
+
     return function() {
         var stream = combine(
             gulp.src(options.src),
@@ -28,9 +32,6 @@ module.exports = function(options) {
 
             $.if(options.sourcemaps, $.sourcemaps.init()),
 
-            $.if("pugData" in options && !!options.pugData, $.data(function() {
-                return require('base_src' in options ? pathJoin(process.cwd(), options.base_src, options.pugData) : pathJoin(process.cwd(), options.pugData));
-            })),
             $.if(options.pug, $.pug(options.pugOptions)),
 
             $.if(options.sourcemaps, $.sourcemaps.write('.'))
