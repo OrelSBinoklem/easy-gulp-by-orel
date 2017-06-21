@@ -4,6 +4,7 @@ const $ = require('gulp-load-plugins')();
 const gulp = require('gulp');
 const combine = require('stream-combiner2').obj;
 const extend = require('extend');
+const fs = require("fs");
 const pathJoin = require('../path.join.js');
 const ignoreFiles = require("../ignore-files");
 
@@ -18,11 +19,11 @@ module.exports = function(options) {
         }
     }, options);
 
-    if(!("data" in options.pugOptions) && "pugData" in options && !!options.pugData) {
-        options.pugOptions.data = require('base_src' in options ? pathJoin(process.cwd(), options.base_src, options.pugData) : pathJoin(process.cwd(), options.pugData));
-    }
-
     return function() {
+        if(!("data" in options.pugOptions) && "pugData" in options && !!options.pugData) {
+            options.pugOptions.data = JSON.parse(fs.readFileSync('base_src' in options ? pathJoin(process.cwd(), options.base_src, options.pugData) : pathJoin(process.cwd(), options.pugData)));
+        }
+
         var stream = combine(
             gulp.src(options.src),
 
