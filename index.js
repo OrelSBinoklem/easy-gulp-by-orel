@@ -133,6 +133,11 @@ var __ = function(config) {
                         options.writeStyleStream = browserSync.stream;
                     }
                     break;
+                case 'html':
+                    if("browserSync" in cfgg && cfgg.browserSync) {
+                        options.writeHTMLHandler = browserSync.reload;
+                    }
+                    break;
             }
 
             return options;

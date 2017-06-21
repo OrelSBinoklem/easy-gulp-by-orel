@@ -24,7 +24,6 @@ module.exports = function(options) {
                         }
                     }
                 }));
-            //ВЫЧЕСТЬ ФАЙЛЫ ИЗ ПРЕДЫДУЩИХ ЗАДАЧ
         } else {
             stream = gulp.watch(options.src, function (e) {
                 if(!("disableRunTask" in options && options.disableRunTask)) {
@@ -33,7 +32,7 @@ module.exports = function(options) {
                         gulp.start(options.name);
                     }
                 }
-            });//ВЫЧЕСТЬ ФАЙЛЫ ИЗ ПРЕДЫДУЩИХ ЗАДАЧ
+            });
         }
 
         return stream;

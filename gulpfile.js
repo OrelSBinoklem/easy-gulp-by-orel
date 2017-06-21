@@ -16,6 +16,9 @@ require('./index')(function(dev) {
 
             minification: !dev,
             sourcemaps: dev,
+            pug: true,
+            pugData: "data.json",
+            pugOptions: {pretty: '\t'},
 
             watch: dev,
 
@@ -33,7 +36,15 @@ require('./index')(function(dev) {
         styles: [
             [
                 {name: 'sass2', src: ['sass/**/case-dostaevsky.sass', 'sass/**/case-help-to-mama.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'styles2', autoprefixer: true, disabled: false},
-                {name: 'sass', src: 'sass/**/*.sass', dest: 'styles', autoprefixer: true, disabled: false}
+                {name: 'sass', src: ['sass/**/*.sass', "!sass/**/{constant,footer,header,mixing}.sass"], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'styles', autoprefixer: true, disabled: false}
+            ]
+        ],
+
+        //support jade
+        //Instal "Pug (ex-Jade)" plugin if you use phpshtorm
+        html: [
+            [
+                {name: 'templates', src: ['*.pug']}
             ]
         ]
     };

@@ -7,12 +7,15 @@ const extend = require('extend');
 const pathJoin = require('../path.join.js');
 const ignoreFiles = require("../ignore-files");
 
+const through2 = require("through2").obj;
+
 module.exports = function(options) {
 
     options = extend({
         sourcemaps: false,
         autoprefixer: true,
-        minification: true
+        minification: true,
+        dest: ""
     }, options);
 
     return function() {
@@ -26,6 +29,11 @@ module.exports = function(options) {
                 $.if("ignoreFiles" in options, ignoreFiles.stream(options.ignoreFiles)),
 
                 $.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest, {extension: '.css'}),
+
+            through2(function (file, enc, callback) {
+                console.log(file.path);
+                callback(null, file);
+            }),
 
                 $.if(options.sourcemaps, $.sourcemaps.init()),
 
