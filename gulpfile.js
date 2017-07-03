@@ -19,6 +19,7 @@ require('./index')(function(dev) {
             pug: true,
             pugData: "pug/data.json",
             pugOptions: {pretty: '\t'},
+            coffeeOptions: {bare: true},
 
             watch: dev,
 
@@ -36,7 +37,8 @@ require('./index')(function(dev) {
         //Instal "Pug (ex-Jade)" plugin if you use phpshtorm
         html: [
             [
-                {name: 'templates', src: ['*.pug'], addWatch: 'pug/**/*.pug', sourcemaps: false}
+                {name: 'pug', src: ['*.pug'], addWatch: 'pug/**/*.pug', sourcemaps: false},
+                {name: 'html', src: ['/**/*.{html,htm}'], sourcemaps: false}
             ]
         ],
 
@@ -45,14 +47,17 @@ require('./index')(function(dev) {
             [
                 {name: 'sass2', src: ['sass/**/case-dostaevsky.sass', 'sass/**/case-help-to-mama.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css', autoprefixer: true, disabled: false},
                 {name: 'sass', src: ['sass/**/*.sass', "!sass/**/{constant,footer,header,mixing}.sass"], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css', autoprefixer: true, disabled: false}
-            ]
+            ],
+            {name: 'css', src: ['/**/*.css'], autoprefixer: true}
         ],
 
+        //support coffee
         js: [
-            {name: 'coffee', src: 'coffee/**/*.coffee'}
+            {name: 'coffee', src: 'coffee/*.coffee', addWatch: "coffee/**/*.coffee", dest: 'js'},
+            {name: 'js', src: '/**/*.js'}
         ],
 
-        copy: {name: 'copy', src: ['/**/*.{js,jpg,png,gif,svg,webp,ico,otf,eot,ttf,woff,woff2}']}
+        copy: {name: 'copy', src: ['/**/*.{jpg,png,gif,svg,webp,ico,otf,eot,ttf,woff,woff2}']}
     };
 });
 

@@ -138,6 +138,11 @@ var __ = function(config) {
                         options.writeStyleStream = browserSync.stream;
                     }
                     break;
+                case 'js':
+                    if("browserSync" in cfgg && cfgg.browserSync) {
+                        options.writeJsStream = browserSync.stream;
+                    }
+                    break;
             }
 
             return options;
