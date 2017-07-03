@@ -128,14 +128,14 @@ var __ = function(config) {
         //Связывание специфических задач с стандартными
         function injectDependenciesOfModules(taskName, nameModule, options) {
             switch(nameModule) {
-                case 'styles':
-                    if("browserSync" in cfgg && cfgg.browserSync) {
-                        options.writeStyleStream = browserSync.stream;
-                    }
-                    break;
                 case 'html':
                     if("browserSync" in cfgg && cfgg.browserSync) {
                         options.writeHTMLHandler = browserSync.stream;
+                    }
+                    break;
+                case 'css':
+                    if("browserSync" in cfgg && cfgg.browserSync) {
+                        options.writeStyleStream = browserSync.stream;
                     }
                     break;
             }
