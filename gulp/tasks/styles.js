@@ -26,14 +26,9 @@ module.exports = function(options) {
         var stream = combine(
                 gulp.src(options.src),
 
-                $.if("ignoreFiles" in options, ignoreFiles.stream(options.ignoreFiles)),
+                "ignoreFiles" in options ? ignoreFiles.stream(options.ignoreFiles) : combine(),
 
                 $.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest, {extension: '.css'}),
-
-            through2(function (file, enc, callback) {
-                console.log(file.path);
-                callback(null, file);
-            }),
 
                 $.if(options.sourcemaps, $.sourcemaps.init()),
 
@@ -50,7 +45,7 @@ module.exports = function(options) {
 
         stream.pipe(gulp.dest('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest))
             .on('error', $.notify.onError())
-            .pipe($.if("writeStyleStream" in options, options.writeStyleStream()))
+            .pipe("writeStyleStream" in options ? options.writeStyleStream() : combine())
             .on('error', $.notify.onError());
 
         return stream;

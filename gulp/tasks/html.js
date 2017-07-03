@@ -12,7 +12,6 @@ module.exports = function(options) {
 
     options = extend(true, {
         sourcemaps: false,
-        pug: false,
         dest: "",
         pugOptions: {
             pretty: '\t'
@@ -20,6 +19,8 @@ module.exports = function(options) {
     }, options);
 
     return function() {
+        const pugFilter = $.filter('**/*.{pug,jade}', {restore: true});
+        
         if(!("data" in options.pugOptions) && "pugData" in options && !!options.pugData) {
             options.pugOptions.data = JSON.parse(fs.readFileSync('base_src' in options ? pathJoin(process.cwd(), options.base_src, options.pugData) : pathJoin(process.cwd(), options.pugData)));
         }
@@ -27,24 +28,22 @@ module.exports = function(options) {
         var stream = combine(
             gulp.src(options.src),
 
-            $.if("ignoreFiles" in options, ignoreFiles.stream(options.ignoreFiles)),
+            "ignoreFiles" in options ? ignoreFiles.stream(options.ignoreFiles) : combine(),
 
             //$.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest, {extension: '.html'}),//решить проблему с редактированием .json и посмотреть что в стилях происходит меняетья файл если редактировать подключаемый файл
 
+            pugFilter,
             $.if(options.sourcemaps, $.sourcemaps.init()),
+            $.pug(options.pugOptions),
+            $.if(options.sourcemaps, $.sourcemaps.write('.')),
+            pugFilter.restore
 
-            $.if(options.pug, $.pug(options.pugOptions)),
-
-            $.if(options.sourcemaps, $.sourcemaps.write('.'))
         ).on('error', $.notify.onError());
 
         stream.pipe(gulp.dest('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest))
+            .on('error', $.notify.onError())
+            .pipe("writeHTMLHandler" in options ? options.writeHTMLHandler() : combine())
             .on('error', $.notify.onError());
-
-        if("writeHTMLHandler" in options) {
-            stream.pipe(options.writeHTMLHandler({stream: true}))
-                .on('error', $.notify.onError());
-        }
 
         return stream;
     };

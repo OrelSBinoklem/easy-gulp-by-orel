@@ -11,26 +11,31 @@ module.exports = function(options) {
         if("addWatch" in options) {
             stream = combine(
                 gulp.watch(options.src, function (e) {
-                    if(!("disableRunTask" in options && options.disableRunTask)) {
+                    if("ignoreFiles" in options) {
                         if(!ignoreFiles.test(path.relative(process.cwd(), e.path), options.ignoreFiles)) {
                             gulp.start(options.name);
                         }
+                    } else {
+                        gulp.start(options.name);
                     }
                 }),
                 gulp.watch(options.addWatch, function (e) {
-                    if(!("disableRunTask" in options && options.disableRunTask)) {
+                    if("ignoreFiles" in options) {
                         if(!ignoreFiles.test(path.relative(process.cwd(), e.path), options.ignoreFiles)) {
                             gulp.start(options.name);
                         }
+                    } else {
+                        gulp.start(options.name);
                     }
                 }));
         } else {
             stream = gulp.watch(options.src, function (e) {
-                if(!("disableRunTask" in options && options.disableRunTask)) {
-                    //console.log(e);
+                if("ignoreFiles" in options) {
                     if(!ignoreFiles.test(path.relative(process.cwd(), e.path), options.ignoreFiles)) {
                         gulp.start(options.name);
                     }
+                } else {
+                    gulp.start(options.name);
                 }
             });
         }

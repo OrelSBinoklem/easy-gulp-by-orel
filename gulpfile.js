@@ -17,7 +17,7 @@ require('./index')(function(dev) {
             minification: !dev,
             sourcemaps: dev,
             pug: true,
-            pugData: "data.json",
+            pugData: "datapug.json",
             pugOptions: {pretty: '\t'},
 
             watch: dev,
@@ -32,21 +32,23 @@ require('./index')(function(dev) {
             }
         },
 
-        //sass, scss, less, styl, css
-        styles: [
-            [
-                {name: 'sass2', src: ['sass/**/case-dostaevsky.sass', 'sass/**/case-help-to-mama.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'styles2', autoprefixer: true, disabled: false},
-                {name: 'sass', src: ['sass/**/*.sass', "!sass/**/{constant,footer,header,mixing}.sass"], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'styles', autoprefixer: true, disabled: false}
-            ]
-        ],
-
-        //support jade
+        //support pug
         //Instal "Pug (ex-Jade)" plugin if you use phpshtorm
         html: [
             [
-                {name: 'templates', src: ['*.pug']}
+                {name: 'templates', src: ['*.pug'], addWatch: 'layouts/*.pug', sourcemaps: false}
             ]
-        ]
+        ],
+
+        //sass, scss, less, styl, css
+        styles: [
+            [
+                {name: 'sass2', src: ['sass/**/case-dostaevsky.sass', 'sass/**/case-help-to-mama.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css', autoprefixer: true, disabled: false},
+                {name: 'sass', src: ['sass/**/*.sass', "!sass/**/{constant,footer,header,mixing}.sass"], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css', autoprefixer: true, disabled: false}
+            ]
+        ],
+
+        copy: {name: 'copy', src: ['/**/*.{js,jpg,png,gif,svg,webp,ico,otf,eot,ttf,woff,woff2}']}
     };
 });
 

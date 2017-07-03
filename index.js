@@ -135,7 +135,7 @@ var __ = function(config) {
                     break;
                 case 'html':
                     if("browserSync" in cfgg && cfgg.browserSync) {
-                        options.writeHTMLHandler = browserSync.reload;
+                        options.writeHTMLHandler = browserSync.stream;
                     }
                     break;
             }
