@@ -16,9 +16,9 @@ require('./index')(function(dev) {
 
             minification: !dev,
             sourcemaps: dev,
-            pug: true,
             pugData: "pug/data.json",
             pugOptions: {pretty: '\t'},
+            autoprefixerOptions: {browsers: ['last 10 versions', "Firefox > 40"], cascade: false},
             coffeeOptions: {bare: true},
 
             watch: dev,

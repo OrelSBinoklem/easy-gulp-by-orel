@@ -11,11 +11,15 @@ const through2 = require("through2").obj;
 
 module.exports = function(options) {
 
-    options = extend({
+    options = extend(true, {
         sourcemaps: false,
         autoprefixer: true,
         minification: true,
-        dest: ""
+        dest: "",
+        autoprefixerOptions: {
+            browsers: ['last 10 versions', "Firefox > 40"],
+            cascade: false
+        }
     }, options);
 
     return function() {
@@ -36,8 +40,7 @@ module.exports = function(options) {
                 sassFilter, $.sass(), sassFilter.restore,
                 lessFilter, $.less(), lessFilter.restore,
 
-                $.if(options.autoprefixer, $.autoprefixer({
-                    browsers: ['> 1%']})),
+                $.if(options.autoprefixer, $.autoprefixer(options.autoprefixerOptions)),
                 $.if(options.minification, $.cleanCss()),
 
                 $.if(options.sourcemaps, $.sourcemaps.write('.'))
