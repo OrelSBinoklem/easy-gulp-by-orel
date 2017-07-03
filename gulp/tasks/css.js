@@ -19,7 +19,8 @@ module.exports = function(options) {
         autoprefixerOptions: {
             browsers: ['last 10 versions', "Firefox > 40"],
             cascade: false
-        }
+        },
+        changed: true
     }, options);
 
     return function() {
@@ -32,7 +33,7 @@ module.exports = function(options) {
 
                 "ignoreFiles" in options ? ignoreFiles.stream(options.ignoreFiles) : combine(),
 
-                $.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest, {extension: '.css'}),
+            $.if(options.changed, $.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest, {extension: '.css'})),
 
                 $.if(options.sourcemaps, $.sourcemaps.init()),
 

@@ -12,12 +12,15 @@ require('./index')(function(dev) {
             base_src: 'src',
             base_dest: 'public',
 
-            clean: false,//ВРЕМЕННО
+            clean: !dev,
+
+            changed: dev,
 
             minification: !dev,
             sourcemaps: dev,
             pugData: "pug/data.json",
             pugOptions: {pretty: '\t'},
+            //https://github.com/ai/browserslist
             autoprefixerOptions: {browsers: ['last 10 versions', "Firefox > 40"], cascade: false},
             coffeeOptions: {bare: true},
 
@@ -37,7 +40,7 @@ require('./index')(function(dev) {
         //Instal "Pug (ex-Jade)" plugin if you use phpshtorm
         html: [
             [
-                {name: 'pug', src: ['*.pug'], addWatch: 'pug/**/*.pug', sourcemaps: false},
+                {name: 'pug', src: ['*.pug'], addWatch: ['pug/**/*.pug', "pug/data.json"], sourcemaps: false},
                 {name: 'html', src: ['/**/*.{html,htm}'], sourcemaps: false}
             ]
         ],

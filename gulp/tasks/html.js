@@ -15,7 +15,8 @@ module.exports = function(options) {
         dest: "",
         pugOptions: {
             pretty: '\t'
-        }
+        },
+        changed: true
     }, options);
 
     return function() {
@@ -30,7 +31,7 @@ module.exports = function(options) {
 
             "ignoreFiles" in options ? ignoreFiles.stream(options.ignoreFiles) : combine(),
 
-            //$.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest, {extension: '.html'}),//решить проблему с редактированием .json и посмотреть что в стилях происходит меняетья файл если редактировать подключаемый файл
+            $.if(options.changed, $.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest, {extension: '.html'})),
 
             pugFilter,
             $.if(options.sourcemaps, $.sourcemaps.init()),

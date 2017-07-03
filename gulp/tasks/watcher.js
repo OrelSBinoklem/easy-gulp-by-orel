@@ -20,13 +20,7 @@ module.exports = function(options) {
                     }
                 }),
                 gulp.watch(options.addWatch, function (e) {
-                    if("ignoreFiles" in options) {
-                        if(!ignoreFiles.test(path.relative(process.cwd(), e.path), options.ignoreFiles)) {
-                            gulp.start(options.name);
-                        }
-                    } else {
-                        gulp.start(options.name);
-                    }
+                    gulp.start(options.name + ":lib");
                 }));
         } else {
             stream = gulp.watch(options.src, function (e) {

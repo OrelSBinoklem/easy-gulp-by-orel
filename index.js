@@ -117,6 +117,10 @@ var __ = function(config) {
                 casualTasks.push(taskName);
                 lazyRequireTask(taskName, nameModule, options);
 
+                //casual tasks for add watch files
+                casualTasks.push(taskName + ":lib");
+                lazyRequireTask(taskName + ":lib", nameModule, extend(true, {}, options, {changed: false}));
+
                 //watchers
                 if("watch" in options && options.watch) {
                     backgroundTasks.push(taskName + ":watch");

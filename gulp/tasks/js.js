@@ -17,7 +17,8 @@ module.exports = function(options) {
         dest: "",
         coffeeOptions: {
             bare: true
-        }
+        },
+        changed: true
     }, options);
 
     return function() {
@@ -28,7 +29,7 @@ module.exports = function(options) {
 
             "ignoreFiles" in options ? ignoreFiles.stream(options.ignoreFiles) : combine(),
 
-            //$.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest, {extension: '.js'}),
+            $.if(options.changed, $.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest, {extension: '.js'})),
 
             $.if(options.sourcemaps, $.sourcemaps.init()),
 
