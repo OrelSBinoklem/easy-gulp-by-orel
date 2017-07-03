@@ -18,6 +18,8 @@ require('./index')(function(dev) {
 
             minification: !dev,
             sourcemaps: dev,
+            includeHtml: true,
+            includeHtmlOptions: {prefix: '@@', basepath: '@file'},
             pugData: "pug/data.json",
             pugOptions: {pretty: '\t'},
             //https://github.com/ai/browserslist
