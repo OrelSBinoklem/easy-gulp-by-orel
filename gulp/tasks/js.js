@@ -34,8 +34,6 @@ module.exports = function(options) {
 
             coffeeFilter, $.coffee(options.coffeeOptions), coffeeFilter.restore,
 
-            $.if(options.minification, $.minifyCss()),
-
             $.if(options.sourcemaps, $.sourcemaps.write('.'))
         ).on('error', $.notify.onError());
 

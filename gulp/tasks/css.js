@@ -38,7 +38,7 @@ module.exports = function(options) {
 
                 $.if(options.autoprefixer, $.autoprefixer({
                     browsers: ['> 1%']})),
-                $.if(options.minification, $.minifyCss()),
+                $.if(options.minification, $.cleanCss()),
 
                 $.if(options.sourcemaps, $.sourcemaps.write('.'))
         ).on('error', $.notify.onError());
