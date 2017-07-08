@@ -25,6 +25,8 @@ require('./index')(function(dev) {
             //https://github.com/ai/browserslist
             autoprefixerOptions: {browsers: ['last 10 versions', "Firefox > 40"], cascade: false},
             coffeeOptions: {bare: true},
+            //please insert your .htaccess file this code https://github.com/vincentorback/WebP-images-with-htaccess
+            webp: true,
 
             watch: dev,
 
@@ -62,7 +64,11 @@ require('./index')(function(dev) {
             {name: 'js', src: '/**/*.js'}
         ],
 
-        copy: {name: 'copy', src: ['/**/*.{jpg,png,gif,svg,webp,ico,otf,eot,ttf,woff,woff2}']}
+        //support jpg, png, gif, svg
+        //quality: "perfect", "good", "simple", "low". default: "simple"
+        images: {name: 'images', src: ['/**/*.{jpg,jpeg,png,gif,svg}'], quality: "simple"},
+
+        copy: {name: 'copy', src: ['/**/*.{webp,ico,otf,eot,ttf,woff,woff2}']}
     };
 });
 

@@ -118,8 +118,10 @@ var __ = function(config) {
                 lazyRequireTask(taskName, nameModule, options);
 
                 //casual tasks for add watch files
-                casualTasks.push(taskName + ":lib");
-                lazyRequireTask(taskName + ":lib", nameModule, extend(true, {}, options, {changed: false}));
+                if("addWatch" in options) {
+                    //casualTasks.push(taskName + ":lib"); надо только для watchera, просто запускать ненадо потомучто это такая же задача как и выше
+                    lazyRequireTask(taskName + ":lib", nameModule, extend(true, {}, options, {changed: false}));
+                }
 
                 //watchers
                 if("watch" in options && options.watch) {
@@ -145,6 +147,11 @@ var __ = function(config) {
                 case 'js':
                     if("browserSync" in cfgg && cfgg.browserSync) {
                         options.writeJsStream = browserSync.stream;
+                    }
+                    break;
+                case 'images':
+                    if("browserSync" in cfgg && cfgg.browserSync) {
+                        options.writeImgStream = browserSync.stream;
                     }
                     break;
             }

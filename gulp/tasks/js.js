@@ -7,8 +7,6 @@ const extend = require('extend');
 const pathJoin = require('../path.join.js');
 const ignoreFiles = require("../ignore-files");
 
-const through2 = require("through2").obj;
-
 module.exports = function(options) {
 
     options = extend(true, {
