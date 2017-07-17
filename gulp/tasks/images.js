@@ -2,13 +2,16 @@
 
 const $ = require('gulp-load-plugins')();
 const gulp = require('gulp');
+const through2 = require("through2").obj;
 const combine = require('stream-combiner2').obj;
 const extend = require('extend');
+const path = require('path');
 const pathJoin = require('../path.join.js');
+const buffer = require('vinyl-buffer');
 const ignoreFiles = require("../ignore-files");
 const imageminJpegRecompress = require('imagemin-jpeg-recompress');
 const pngquant = require('imagemin-pngquant');
-const imageminWebp = require('imagemin-webp');
+const spritesmith = require("gulp.spritesmith");
 const cache = require('gulp-cache');
 
 module.exports = function(options) {
@@ -17,8 +20,32 @@ module.exports = function(options) {
         dest: "",
         changed: true,
         quality: "simple",//"perfect", "good", "simple", "low"
-        sprite: false
+        webp: false,
+        sprite: false,
+        styleFormat: 'sass',
+        relStyleToImg: '',
+        pngName: 'sprite',//параметр ненужен но будет ошибка если его незадать - если будут только svg картинки всёравно сработает код спрайтов для png
+        png2x: false,
+        pngStyle: '_png-sprite',
+        prefixIcon: 'icon',
+        destStyle: '.'
     }, options);
+
+    var dest = 'base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest;
+
+    var spritesmithOptions = {
+        imgName: path.join(options.relStyleToImg, options.pngName + '.png').replace(/\\/gim, "/"),
+        cssName: options.pngStyle + '.' + options.styleFormat,
+        cssTemplate: __dirname + '/images/' + options.styleFormat + (options.png2x ? "_retina" : "") + '.template.handlebars',//scss - шаблон с map форматом использовать пока небудем
+        cssVarMap: function (sprite) {
+            sprite.name = options.prefixIcon + '-' + sprite.name;
+        },
+        algorithm: 'binary-tree'
+    };
+    if(options.png2x) {
+        spritesmithOptions.retinaSrcFilter = '**/*' + options.png2x + '.png';
+        spritesmithOptions.retinaImgName = path.join(options.relStyleToImg, options.pngName + options.png2x + '.png').replace(/\\/gim, "/");
+    }
 
     var jpegQuality, pngQuality, webpQuality;
     switch (options.quality) {
@@ -45,16 +72,39 @@ module.exports = function(options) {
     }
 
     return function() {
-        var stream_src = gulp.src(options.src)
+        var stream_main = gulp.src(options.src)
             .pipe("ignoreFiles" in options ? ignoreFiles.stream(options.ignoreFiles) : combine());
 
-        var stream_main = stream_src.pipe(combine(
+        //PNG sprite
+        if(options.sprite) {
+            var spriteData = stream_main
+                .pipe($.clone()).on('error', $.notify.onError())
+                .pipe($.filter('**/*.png')).on('error', $.notify.onError())
+                .pipe(spritesmith(spritesmithOptions));
+
+
+            var stream_pngSprite = spriteData.img
+                .pipe(buffer())
+                .pipe(through2(function(file, enc, callback){
+                    var pathArr = file.path.split(/[\\\/]/gim);
+                    file.path = pathArr[pathArr.length - 1];
+                    callback(null, file);
+                }));
+            spriteData.css.pipe(gulp.dest('base_src' in options ? pathJoin(options.base_src, options.destStyle) : options.destStyle));
+
+            //SVG sprite
+
+            stream_main = stream_pngSprite;
+        }
+
+        //images compress
+        var stream_compress = stream_main.pipe(combine(
 
             $.clone(),
 
-            $.if(options.changed, $.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest)),
+            $.if(options.changed, $.changed(dest)),
 
-            gulp.dest('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest),//fix bug for not save unoptimized images
+            gulp.dest(dest),//fix bug for not save unoptimized images
 
             $.imagemin([
                 $.imagemin.gifsicle({interlaced: true}),
@@ -67,30 +117,27 @@ module.exports = function(options) {
                 verbose: true
             })
 
-        ).on('error', $.notify.onError()));
+        ).on('error', $.notify.onError("Error: <%= error.message %> 113")));
 
-        stream_main = stream_main.pipe(gulp.dest('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest))
-            .on('error', $.notify.onError());
-
-        if(options.webp === true) {
-            var stream_webp = stream_src.pipe(combine(
+        if(options.webp) {
+            var stream_webp = stream_main.pipe(combine(
 
                 $.clone(),
 
-                $.if(options.changed, $.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest, {extension: '.webp'})),
-
                 $.filter('**/*.{jpg,jpeg,png}'),
+
+                $.if(options.changed, $.changed(dest, {extension: '.webp'})),
 
                 $.webp(webpQuality)
 
-            ).on('error', $.notify.onError()));
+            ).on('error', $.notify.onError("Error: <%= error.message %> 121")));
         }
 
-        var stream_merged = (options.webp === true ? $.merge(stream_main, stream_webp) : stream_main)
-            .pipe(gulp.dest('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest))
-            .on('error', $.notify.onError())
+        var stream_merged = (options.webp ? $.merge(stream_compress, stream_webp) : stream_compress)
+            .pipe(gulp.dest(dest))
+            .on('error', $.notify.onError("Error: <%= error.message %> 126"))
             .pipe("writeImgStream" in options ? options.writeImgStream() : combine())
-            .on('error', $.notify.onError());
+            .on('error', $.notify.onError("Error: <%= error.message %> 128"));
 
         return stream_merged;
     };

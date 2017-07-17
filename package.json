@@ -48,13 +48,14 @@
     "gulp-sourcemaps": "^2.6.0",
     "gulp-stylus": "^2.6.0",
     "gulp-webp": "^2.3.0",
+    "gulp.spritesmith": "^6.5.1",
     "imagemin-jpeg-recompress": "^5.1.0",
     "imagemin-pngquant": "^5.0.1",
-    "imagemin-webp": "^4.0.0",
     "multimatch": "^2.1.0",
     "require-dir": "^0.3.1",
     "run-sequence": "^1.2.2",
-    "stream-combiner2": "^1.1.1"
+    "stream-combiner2": "^1.1.1",
+    "vinyl-buffer": "^1.0.0"
   },
   "devDependencies": {}
 }

@@ -11,6 +11,7 @@ const pathJoin = require('./gulp/path.join.js');
 var __ = function(config) {
     var isDevelopment;
     var taskDependencies = [];
+    var spritesTasks = [];
     var casualTasks = [];
     var backgroundTasks = [];
 
@@ -91,7 +92,8 @@ var __ = function(config) {
                 }
             }
         }
-        taskDependencies.push(casualTasks);
+        if(spritesTasks.length){taskDependencies.push(spritesTasks)}
+        if(casualTasks.length){taskDependencies.push(casualTasks)}
 
         function combineGlobalLocal_preConcateBaseSrcInSrcAndAddWatchPattern__options(options) {
             //Совмещаем глобальные опции с опциями модуля
@@ -113,8 +115,12 @@ var __ = function(config) {
                 //dependencies of specific modules
                 options = injectDependenciesOfModules(taskName, nameModule, options);
 
-                //casual tasks
-                casualTasks.push(taskName);
+                //sprites tasks and casual tasks
+                if(nameModule == 'images' && 'sprite' in options && options.sprite) {
+                    spritesTasks.push(taskName);
+                } else {
+                    casualTasks.push(taskName);
+                }
                 lazyRequireTask(taskName, nameModule, options);
 
                 //casual tasks for add watch files
@@ -171,9 +177,7 @@ var __ = function(config) {
             lazyRequireTask("adaptive-p-p", "adaptive-p-p", extend({}, cfgg, {adaptivePixelPerfectModule: adaptivePixelPerfect}));
         }
 
-        if(backgroundTasks.length) {
-            taskDependencies.push(backgroundTasks);
-        }
+        if(backgroundTasks.length){taskDependencies.push(backgroundTasks)}
         
         taskDependencies.push(function(callback) {
             maincallback();
