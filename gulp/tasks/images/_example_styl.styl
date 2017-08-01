@@ -1,0 +1,42 @@
+sprite($sprite)
+  background-image url($sprite[8])
+  background-position $sprite[2] $sprite[3]
+  width $sprite[4]
+  height $sprite[5]
+
+retinaSprite($retina_group)
+  $normal_sprite = $retina_group[1]
+  $retina_sprite = $retina_group[2]
+  sprite($normal_sprite)
+
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi)
+    background-image url($retina_sprite[8])
+    background-size $normal_sprite[6] $normal_sprite[7]
+
+sprites($sprites)
+  for $sprite in $sprites
+    $sprite_name = $sprite[9]
+    .{$sprite_name}
+      sprite($sprite)
+
+retinaSprites($retina_groups)
+  for $retina_group in $retina_groups
+    $sprite_name = $retina_group[0]
+    .{$sprite_name}
+      retinaSprite($retina_group)
+
+retinaSprites($retina_groups)
+
+svgSprite($sprite)
+  font-size ($sprite[1]/16)*1rem
+  width ($sprite[0]/$sprite[1])*1em
+  height 1em
+  fill currentColor
+
+svgSprites($sprites)
+  for $sprite in $sprites
+    $sprite_name = $sprite[2]
+    .{$sprite_name}
+      svgSprite($sprite)
+
+svgSprites($svg_icons)

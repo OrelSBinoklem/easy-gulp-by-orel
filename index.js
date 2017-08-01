@@ -19,6 +19,13 @@ var __ = function(config) {
         config = config(isDevelopment);
 
         var cfgg = config.general;
+        var cfgm = {};
+        for(var key in cfgg) {
+            if(/task_/gim.test(key)) {
+                cfgm[key] = cfgg[key];
+                delete cfgg[key];
+            }
+        }
 
         //Создаём батники для удобства запуска
         require('./gulp/bat')(config, isDevelopment);
@@ -71,7 +78,7 @@ var __ = function(config) {
                             //Вложенный массив взаимосвязанных задач
                             var cascadeMinimatchPatterns = [];
                             level_two.forEach(function(options) {
-                                options = combineGlobalLocal_preConcateBaseSrcInSrcAndAddWatchPattern__options(options);
+                                options = combineGlobal_Task_Local_preConcateBaseSrcInSrcAndAddWatchPattern__options(name, options);
 
                                 options.ignoreFiles = cascadeMinimatchPatterns.slice();
 
@@ -81,13 +88,13 @@ var __ = function(config) {
                             });
                         } else {
                             //Массив задач
-                            level_two = combineGlobalLocal_preConcateBaseSrcInSrcAndAddWatchPattern__options(level_two);
+                            level_two = combineGlobal_Task_Local_preConcateBaseSrcInSrcAndAddWatchPattern__options(name, level_two);
                             taskAndWatcher(level_two.name, name, level_two);
                         }
                     });
                 } else {
                     //Одна задача один обьект
-                    var options = combineGlobalLocal_preConcateBaseSrcInSrcAndAddWatchPattern__options(config[name]);
+                    var options = combineGlobal_Task_Local_preConcateBaseSrcInSrcAndAddWatchPattern__options(name, config[name]);
                     taskAndWatcher(options.name, name, options);
                 }
             }
@@ -95,9 +102,13 @@ var __ = function(config) {
         if(spritesTasks.length){taskDependencies.push(spritesTasks)}
         if(casualTasks.length){taskDependencies.push(casualTasks)}
 
-        function combineGlobalLocal_preConcateBaseSrcInSrcAndAddWatchPattern__options(options) {
-            //Совмещаем глобальные опции с опциями модуля
-            options = extend({}, cfgg, options);
+        function combineGlobal_Task_Local_preConcateBaseSrcInSrcAndAddWatchPattern__options(nameModule, options) {
+            //Совмещаем глобальные опции с общими опциями модуля и опциями конкретной задачи
+            if("task_" + nameModule in cfgm) {
+                options = extend(true, {}, cfgg, cfgm["task_" + nameModule], options);
+            } else {
+                options = extend(true, {}, cfgg, options);
+            }
 
             //Прибавляем к пути src модуля путь base_src, если он есть
             options.src = preConcateBaseSrc(options, options.src);
@@ -168,13 +179,13 @@ var __ = function(config) {
         //browserSync - добавление задачи
         if("browserSync" in cfgg && cfgg.browserSync) {
             backgroundTasks.push("browser-sync");
-            lazyRequireTask("browser-sync", "browser-sync", extend({}, cfgg, {browserSyncModule: browserSync}));
+            lazyRequireTask("browser-sync", "browser-sync", extend(true, {}, cfgg, {browserSyncModule: browserSync}));
         }
 
         //adaptivePixelPerfect - добавление задачи
         if("adaptivePixelPerfect" in cfgg && cfgg.adaptivePixelPerfect) {
             backgroundTasks.push("adaptive-p-p");
-            lazyRequireTask("adaptive-p-p", "adaptive-p-p", extend({}, cfgg, {adaptivePixelPerfectModule: adaptivePixelPerfect}));
+            lazyRequireTask("adaptive-p-p", "adaptive-p-p", extend(true, {}, cfgg, {adaptivePixelPerfectModule: adaptivePixelPerfect}));
         }
 
         if(backgroundTasks.length){taskDependencies.push(backgroundTasks)}

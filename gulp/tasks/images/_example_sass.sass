@@ -1,0 +1,44 @@
+@mixin sprite($sprite)
+  $sprite-image: nth($sprite, 9)
+  background-image: url(#{$sprite-image})
+  background-position: nth($sprite, 3) nth($sprite, 4)
+  width: nth($sprite, 5)
+  height: nth($sprite, 6)
+
+@mixin retina-sprite($retina-group)
+  $normal-sprite: nth($retina-group, 2)
+  $retina-sprite: nth($retina-group, 3)
+  @include sprite($normal-sprite)
+
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi)
+    $sprite-image: nth($retina-sprite, 9)
+    background-image: url(#{$sprite-image})
+    background-size: nth($normal-sprite, 7) nth($normal-sprite, 8)
+
+@mixin sprites($sprites)
+  @each $sprite in $sprites
+    $sprite-name: nth($sprite, 10)
+    .#{$sprite-name}
+      @include sprite($sprite)
+
+@mixin retina-sprites($retina-groups)
+  @each $retina-group in $retina-groups
+    $sprite-name: nth($retina-group, 1)
+    .#{$sprite-name}
+      @include retina-sprite($retina-group)
+
++retina-sprites($retina-groups)
+
+@mixin svg-sprite($sprite)
+  font-size: (nth($sprite, 2)/16)*1rem
+  width: (nth($sprite, 1)/nth($sprite, 2))*1em
+  height: 1em
+  fill: currentColor
+
+@mixin svg-sprites($sprites)
+  @each $sprite in $sprites
+    $sprite-name: nth($sprite, 3)
+    .#{$sprite-name}
+      @include svg-sprite($sprite)
+
++svg-sprites($svg-icons)

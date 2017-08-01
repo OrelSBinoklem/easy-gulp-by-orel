@@ -5,7 +5,7 @@ const del = require('del');
 module.exports = function(options) {
 
     return function() {
-        return del(options.base_dest);
+        return del([options.base_dest, options.base_tmp]);
     };
 
 };

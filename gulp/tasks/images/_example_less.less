@@ -1,0 +1,60 @@
+.sprite(@sprite) {
+  @sprite-image: extract(@sprite, 9);
+  @sprite-image-bare: ~`"@{sprite-image}".slice(1, -1)`;
+  background-image: url(@sprite-image-bare);
+  background-position: extract(@sprite, 3) extract(@sprite, 4);
+  width: extract(@sprite, 5);
+  height: extract(@sprite, 6);
+}
+
+.retina-sprite(@retina-group) {
+  @normal-sprite: extract(@retina-group, 2);
+  @retina-sprite: extract(@retina-group, 3);
+  .sprite(@normal-sprite);
+
+  @media (-webkit-min-device-pixel-ratio: 2),
+  (min-resolution: 192dpi) {
+    @sprite-image: extract(@retina-sprite, 9);
+    @sprite-image-bare: ~`"@{sprite-image}".slice(1, -1)`;
+    background-image: url(@sprite-image-bare);
+    background-size: extract(@normal-sprite, 7) extract(@normal-sprite, 8);
+  }
+}
+
+.sprites(@sprites, @i: 1) when (@i <= length(@sprites)) {
+  @sprite: extract(@sprites, @i);
+  @sprite-name: e(extract(@sprite, 10));
+  .@{sprite-name} {
+    .sprite(@sprite);
+  }
+  .sprites(@sprites, @i + 1);
+}
+
+.retina-sprites(@retina-groups, @i: 1) when (@i <= length(@retina-groups)) {
+  @retina-group: extract(@retina-groups, @i);
+  @sprite-name: e(extract(@retina-group, 1));
+  .@{sprite-name} {
+    .retina-sprite(@retina-group);
+  }
+  .retina-sprites(@retina-groups, @i + 1);
+}
+
+.retina-sprites(@retina-groups);
+
+.svg-sprite(@sprite) {
+  font-size: (extract(@sprite, 2)/16)*1rem;
+  width: (extract(@sprite, 1)/extract(@sprite, 2))*1em;
+  height: 1em;
+  fill: currentColor;
+}
+
+.svg-sprites(@sprites, @i: 1) when (@i <= length(@sprites)) {
+  @sprite: extract(@sprites, @i);
+  @sprite-name: e(extract(@sprite, 3));
+  .@{sprite-name} {
+    .svg-sprite(@sprite);
+  }
+  .svg-sprites(@sprites, @i + 1)
+}
+
+.svg-sprites(@svg-icons);
