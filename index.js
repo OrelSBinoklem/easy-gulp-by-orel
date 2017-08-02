@@ -61,7 +61,7 @@ var __ = function(config) {
                 };
 
                 if("browserSyncOptions" in cfgg) {
-                    cfgg.browserSyncOptions = extend(neededForBrowserSync, cfgg.browserSyncOptions);
+                    cfgg.browserSyncOptions = extend(true, neededForBrowserSync, cfgg.browserSyncOptions);
                 } else {
                     cfgg.browserSyncOptions = neededForBrowserSync;
                 }
@@ -84,7 +84,13 @@ var __ = function(config) {
 
                                 taskAndWatcher(options.name, name, options);
 
-                                cascadeMinimatchPatterns.push(options.src);
+                                if(!("disabled" in options) || !options.disabled) {
+                                    cascadeMinimatchPatterns.push(options.src);
+                                } else {
+                                    if(options.disabled === "files-consider") {
+                                        cascadeMinimatchPatterns.push(options.src);
+                                    }
+                                }
                             });
                         } else {
                             //Массив задач
@@ -114,7 +120,7 @@ var __ = function(config) {
             options.src = preConcateBaseSrc(options, options.src);
 
             //Прибавляем к пути addWatch путь base_src, если он есть
-            if("addWatch" in options) {
+            if("addWatch" in options && options.addWatch) {
                 options.addWatch = preConcateBaseSrc(options, options.addWatch);
             }
 
@@ -135,7 +141,7 @@ var __ = function(config) {
                 lazyRequireTask(taskName, nameModule, options);
 
                 //casual tasks for add watch files
-                if("addWatch" in options) {
+                if("addWatch" in options && options.addWatch) {
                     //casualTasks.push(taskName + ":lib"); надо только для watchera, просто запускать ненадо потомучто это такая же задача как и выше
                     lazyRequireTask(taskName + ":lib", nameModule, extend(true, {}, options, {changed: false}));
                 }

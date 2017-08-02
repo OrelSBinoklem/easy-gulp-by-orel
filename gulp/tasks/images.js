@@ -227,7 +227,7 @@ module.exports = function(options) {
         tasks.push(stream_compress);
         if(options.webp){tasks.push(stream_webp)}
         if(options.sprite){tasks.push(stream_svg_sprite)}
-        if(options.sprite && options.spriteOpt.destExamples){tasks.push(stream_examples_sprite)}
+        if(options.sprite && spriteOpt.destExamples){tasks.push(stream_examples_sprite)}
 
         tasks.forEach(function(el) {
             el.pipe(gulp.dest(dest))

@@ -1,96 +1,127 @@
 'use strict';
 const gulp = require('gulp');
 
-//Понятия:
-//Модуль - gulp модуль выполняющий задачи одного типа
+//Concepts:
+//Module - gulp module that performs tasks of the same type
 
-//Есть 3 уровня опций:
-//1. Глобальный который распространяеться на все задачи (задаёться в свойстве "general")
-/*2. Для модуля задач одного типа (задаёться в свойстве general и свойстве с именем task_имя_задачи).
- * Знак "•" в начале комментарий свойств обозначает те свойства которые управляют режимами работы задач или этого плагина (помечаються на том уровне на котором используються)
- * Знак "&" означает что они общие для нескольких модулей и их лучше задавать на глобальном уровне.
- * Знак "↓" означает что эти свойства рекомендуеться задавать отдельно для каждой конкретной задачи*/
-//3. Локальные для каждой задачи (задаються в каждом обьекте в свойстве с именем модуля)
+//If the variable dev = true, then this is development and if false then the production
+//There are 3 levels of options:
+//1. The global one that propagates to all tasks (set in the "general" property)
+/*2. For a module of tasks of the same type (set in the general property and a property named task_name of the task).
+ * The sign "•" at the beginning of the properties comment denotes those properties that control the modes of operation of tasks or this plugin (marked at the level on which to use)
+ * The sign "&" means that they are common for several modules and they are better set on a global level.
+ * The sign "↓" means that these properties are recommended to be set separately for each specific task
+//3. Local for each task (set in each object in the property with the module name)
 
-//Задачи задаються в свойствах имеющие имена модулей. Потдерживаемые модули: html, css, js, images, copy
-//Есть 3 формата задания задач:
-//1. Просто обьект с настройками если задача одна
-//2. массиив объектов задач если надо разные файлы по разному обработать
-/*3. Можно в массиве задач заместо объектов настроек передавать массивы объектов настроек связанных задач. Если определнные файлы были обработаны связанной задачей то в последующие связанные задачи в рамках одного массива они непопадут
- * Запомните! Вначале надо определять задачи с более частными шаблонами файлов а потом с более общими, наподобие системы роутинга в php фреймворках. Потому что если передать
- * в начале более общий шаблон то файлы всегда будут попадать в эту задачу и никогда непопадут в следующую задачу с более частным шаблоном*/
+//Tasks are defined in properties that have module names. Supported modules: html, css, js, images, copy
+//There are 3 formats for assigning tasks:
+//1. Just an object with settings if the task is one
+//2. Array of task objects if you need to process different files differently
+/*3. You can transfer arrays of the settings of related tasks in the array of tasks instead of the configuration objects. If certain files have been processed by a related task, then in subsequent related tasks within the same array they will not fall
+ * Remember! First, you need to define tasks with more specific file templates and then with more general ones, like the routing system in php frameworks. Because if you pass
+ * in the beginning a more general template, then the files will always fall into this task and will never fall into the next task with a more private template*/
 
 require('./index')(function(dev) {
     return {
         general: {
-            base_src: 'src',     //
-            base_tmp: 'tmp',
-            base_dest: 'public',
+            base_src: 'src',              // (String: "путь"       Def:"."). Base path to the source files
+            base_tmp: 'tmp',              // (String: "путь"       Def:"."). Base path to the temporary files folder
+            base_dest: 'public',          // (String: "путь"       Def:"."). Base path to the folder with the end result
 
-            clean: !dev,
+            clean: !dev,                  //•(boolean: true|false, Def:false). Destroys the folders "base_tmp", "base_dest" before running the main tasks
 
-            changed: dev,
+            changed: dev,                 //•(boolean: true|false, Notdef). Process only those files that have changed
+            minification: !dev,           //•(boolean: true|false, Notdef). Minification of files
+            sourcemaps: dev,              //•(boolean: true|false, Notdef). Sourcemaps files
 
-            minification: !dev,
-            sourcemaps: dev,
+            watch: dev,                   //•(boolean: true|false, Def:false). Monitor file changes and recompile on the fly. Set the saving every 1 sec if you use the phpshtorm editor (File | Settings | Appearance and Behavior | System Settings | Save files automatically if application is idle for 1 sec)
 
-            //set 1 sec save if you use phpshtorm (File | Settings | Appearance and Behavior | System Settings | Save files automatically if application is idle for 1 sec)
-            watch: dev,
+            browserSync: dev,             //•(boolean: true|false, Def:false). Updates on the fly the layout in the browser if the files have changed. Synchronizes actions in several browsers, which allows you to test the layout simultaneously in several browsers. Allows you to test the layout on mobile via WIFI
+            browserSyncOptions: {},       // (object: for browser-sync plugin, Def:notdocumented). By default, different options are set for different settings
 
-            browserSync: dev,
-            browserSyncOptions: {},
-
-            adaptivePixelPerfect: dev,
+            adaptivePixelPerfect: dev,    //•(boolean: true|false, Def:false). Emulates the layout at different resolutions and puts under it a design image corresponding to this resolution. Synchronizes actions in several browsers, which allows you to test the layout simultaneously in several browsers. So far, it does not allow to test the layout on mobile via WIFI !!!
             adaptivePixelPerfectOptions: {
-                port: 3010,
-                design: "design"
+                port: 3010,               // (int: \d{4},          Def:3010). The port on which to create an alternative plug-in page in addition to browser-sync
+                design: "design"          // (String: "path"       Def:"design"). The path to the folder with the pictures of the design
             },
 
             task_html: {
-                includeHtml: true,
-                includeHtmlOptions: {prefix: '@@', basepath: '@file'},
-                pugData: "pug/data.json",
-                pugOptions: {pretty: '\t'}
+                includeHtml: true,        //•↓(boolean: true|false, Def:true). A plugin that simply connects one html files (with frequently used parts of the code, for example, header and footer) to the processed
+                includeHtmlOptions: {     // ↓(object: for gulp-file-include plugin Def:{prefix: '@@', basepath: '@file'}).
+                    prefix: '@@',         //  (String:              Def: "@@"). Prefix before include, example: @@include('./header.html')
+                    basepath: '@file'     //  (String: "relative path" Def: "@file"). Regarding what to look for the attached file. Default: relative to the current file being processed
+                },
+                pugData: "pug/data.json", //• (Boolean: false | String: "path" Notdef). Json file in which the auxiliary content data is stored for example: the text of the names of the links and / or the text of the posts. This data will be transferred to all pug files ... (relative to "base_src"). // Set the "Pug (ex-Jade)" plugin if you are using the phpshtorm editor
+                pugOptions: {
+                    pretty: '\t'          //  (String:              Def: "\t"). What indents should be nested tags when compiling in html. Default: tab
+                },
+                //changed: true,          // &(boolean: true|false, Def:true). Process only those files that have changed
+                sourcemaps: false,        // &(boolean: true|false, Def:false). Sourcemaps files
+                name: "",                 // ↓(String: "task name"  Notdef)
+                src: "",                  // ↓(minimatch patterns   Notdef). Where to get files (relative to "base_src"). Supported formats: html, htm, pug
+                dest: "",                 // ↓(String: "path"       Def: ""). Where to put html (relative to "base_dest")
+                addWatch: false,          // ↓(Boolean: false | String: "path" Def: false). Adds files to the monitoring. When changing files, it simply performs the task without processing these files (relative to "base_src")
+                disabled: false           //•↓(boolean: true|false | String: "files-consider", Def:false). Cancels the task - you may need to use the variable dev - if you want the files in the dependent tasks to be considered and not to be allowed as when the mode is on, then pass the line "files-consider"
             },
 
-            //https://github.com/ai/browserslist
             task_css: {
-                autoprefixerOptions: {browsers: ['last 10 versions', "Firefox > 40"], cascade: false}
+                autoprefixer: true,       //• (boolean: true|false, true). Vendor prefixes, so that more browsers use modern chips even though sometimes with small bugs. For example -webkit-transition:
+                autoprefixerOptions: {    //  (object: for gulp-autoprefixer plugin Def:{browsers: ['last 2 versions'], cascade: false}). See details here: //https://github.com/ai/browserslist
+                    browsers: ['last 10 versions', "Firefox > 40"],
+                    cascade: false
+                },
+                //changed: true,          // &(boolean: true|false, Def:true). Process only those files that have changed
+                sourcemaps: false,        // &(boolean: true|false, Def:false). Sourcemaps файлы
+                minification: true,       //  (boolean: true|false, true). Минификация files
+                name: "",                 // ↓(String: "task name"  Notdef)
+                src: "",                  // ↓(minimatch patterns   Notdef). Where to get files (relative to "base_src"). Supported formats: sass, scss, less, styl, css
+                dest: "",                 // ↓(String: "path"       Def: ""). Where to put css (relative to "base_dest")
+                addWatch: false,          // ↓(Boolean: false | String: "путь" Def: false). Adds files to the monitoring. When changing files, it simply performs the task without processing these files (relative to "base_src")
+                disabled: false           //•↓(boolean: true|false | String: "files-consider", Def:false). Cancels the task - you may need to use the variable dev - if you want the files in the dependent tasks to be considered and not to be allowed as when the mode is on, then pass the line "files-consider"
             },
 
             task_js: {
-                coffeeOptions: {bare: true}          //  (object: for gulp-coffee plugin,      Def:{bare: true}). Обрабатывать только те картинки которые изменились
+                coffeeOptions: {          //• (object: for gulp-coffee plugin, Def:{bare: true}).
+                    bare: true
+                },
+                name: "",                 // ↓(String: "task name"  Notdef)
+                src: "",                  // ↓(minimatch patterns   Notdef). Where to get files (relative to "base_src"). Supported formats: js, coffee
+                dest: "",                 // ↓(String: "path"       Def: ""). Where to put js (relative to "base_dest")
+                addWatch: false,          // ↓(Boolean: false | String: "путь" Def: false). Adds files to the monitoring. When changing files, it simply performs the task without processing these files (relative to "base_src")
+                disabled: false           //•↓(boolean: true|false | String: "files-consider", Def:false). Cancels the task - you may need to use the variable dev - if you want the files in the dependent tasks to be considered and not to be allowed as when the mode is on, then pass the line "files-consider"
             },
 
             task_images: {
-                //changed: true,                     // &(boolean: true|false,                 Def:true). Обрабатывать только те картинки которые изменились
-                quality: "simple",                   //• (String: "perfect" | "good" | "simple" | "low", Def: "simple"). webp всеравно жмёться алгоритмом с потерями при "perfect" (решение автора плагина)
-                webp: true,                          //• (boolean: true|false,                 Def:false). Все картинки дополнительно жмуться в формат webp и вставляються в ту же папку с такими же именами
-                sprite: false,                       //•↓(boolean: true|false,                 Def:false). Просто жмём картинки или создаём спрайт. Вставьте в ваш .htaccess файл код с этой статьи: https://github.com/vincentorback/WebP-images-with-htaccess. Для потдержки webp
-                dest: "",                            // ↓(String: "путь"                       Def: "" куда ложить картики или спрайты (относительно "base_dest")
+                //changed: true,          // &(boolean: true|false,                 Def:true). Process only those files that have changed
+                quality: "simple",        //• (String: "perfect" | "good" | "simple" | "low", Def: "simple"). The webp is still compressed by the lossy algorithm with "perfect" (the plugin author's solution)
+                webp: true,               //• (boolean: true|false,                 Def:false). All the pictures are additionally hammered into the webp format and inserted into the same folder with the same names. Insert the code from this article into your .htaccess file: https://github.com/vincentorback/WebP-images-with-htaccess. For webp support
+                sprite: false,            //•↓(boolean: true|false,                 Def:false). Just click the pictures or create a sprite.
                 spriteOptions: {
-                    styleFormat: 'sass',             //  (String: "расширение файла"           Def: "sass"). Для препроцессора стилей в котором будут данные о спрайте
-                    destStyle: 'sass',               //  (String: "путь"                       Def: "sass"). для файла препроцессора стилей в котором будут данные о спрайте (относительно "base_tmp")
-                    relStyleToImg: '../img/sprites', //  (String: " относительный путь"         Def: ""). путь относительно откомпилированного файла стилей с данными о спрайте к картинке спрайту
-                    destExamples: 'sprite-examples', //  Папка в которую поместить полезные миксины и примеры вывода стилей и html для отдельных иконок из спрайтов. (относительно "base_tmp")
+                    styleFormat: 'sass',             //  (String: "file extension"             Def: "sass"). For the preprocessor of styles in which there will be data about the sprite
+                    destStyle: 'sass',               //  (String: "path"                       Def: "sass"). For a preprocessor style file in which there will be data about sprite (relative to "base_tmp")
+                    relStyleToImg: '../img/sprites', //  (String: "relative path"         Def: ""). The path to the compiled style file with the data about the sprite
+                    destExamples: 'sprite-examples', //  (Boolean: false | String: "path"      Def: "sprite-examples"). A folder in which to put useful mixins and examples of outputting styles and html for individual icons from sprites. (Relative to "base_tmp")
                     png: {
-                        prefixIcon: "icon-",         //  (String: "имя файла"                  Def: "icon__").Префикс к именам иконок спрайта - используеться в формировании классов стилей иконок
-                        postfix2x: "@2x",            //• (Boolean: false | String: "имя файла" Def: false). Конец имени файлов с двойным разрешением для создания спрайта для ретины или 4k
-                        name: 'sprite',              // ↓(String: "имя файла"                  Def: "sprite"). Картинка спрайта
-                        styleName: '_png-sprite'     // ↓(String: "имя файла"                  Def: "_png-sprite"). Стили с данными об иконках спрайта
+                        prefixIcon: "icon-",         //  (String: "file name"                  Def: "icon__"). The prefix to the names of the sprite icons is used in the formation of icon style classes
+                        postfix2x: "@2x",            //• (Boolean: false | String: "file name" Def: false). End of file name with double resolution to create a sprite for retina or 4k. "-2x" with such a line there are bugs!!!
+                        name: 'sprite',              // ↓(String: "file name"                  Def: "sprite"). Picture of the sprite
+                        styleName: '_png-sprite'     // ↓(String: "file name"                  Def: "_png-sprite"). Styles with information about the icons of the sprite
                     },
-                    svg: {
-                        prefixIcon: "icon-",         //  (String: "имя файла"                  Def: "svg-icon__").Префикс к именам иконок спрайта - используеться в формировании классов стилей иконок и идентификаторов в тегах symbol в svg
-                        clearColor: false,           //• (boolean: true|false,                 Def:false). Удаление атрибутов цвета чтобы можно было цвет svg иконки задавать через свойство color в стилях
-                        name: 'sprite',              // ↓(String: "имя файла"                  Def: "sprite"). Картинка спрайта
-                        styleName: '_svg-sprite'     // ↓(String: "имя файла"                  Def: "_png-sprite"). Стили с данными об иконках спрайта
+                    svg: {//This method of creating the svg sprite is based on - http://glivera-team.github.io/svg/2016/06/13/svg-sprites-2.html. In this method, you can not manage icons through js, if you need it then embed images into html. To better support older browsers (https://github.com/jonathantneal/svg4everybody) //Display svg icons in Windows Explorer - http://savvateev.org/blog/54/
+                        prefixIcon: "icon-",         //  (String: "file name"                  Def: "svg-icon__"). The prefix to the names of the sprite icons is used in the formation of icon style classes and identifiers in the symbol tags in svg
+                        clearColor: false,           //• (boolean: true|false,                 Def:false). Removing the color attributes so that the color of the svg icons can be set via the color property in styles
+                        name: 'sprite',              // ↓(String: "file name"                  Def: "sprite"). Picture of the sprite
+                        styleName: '_svg-sprite'     // ↓(String: "file name"                  Def: "_png-sprite"). Styles with information about the icons of the sprite
                     }
-                }
+                },
+                name: "",                 // ↓(String: "task name"                  Notdef)
+                src: "",                  // ↓(minimatch patterns                   Notdef) Whence to take pictures (concerning "base_src"). Supported formats: jpg, png, gif, svg
+                dest: "",                 // ↓(String: "path"                       Def: "") Where to put the cards or sprites (relative to "base_dest")
+                addWatch: false,          // ↓(Boolean: false | String: "path"      Def: false). Adds files to the monitoring. When changing files, it simply performs the task without processing these files (relative to "base_src")
+                disabled: false           //•↓(boolean: true|false | String: "files-consider", Def:false). Cancels the task - you may need to use the variable dev - if you want the files in the dependent tasks to be considered and not to be allowed as when the mode is on, then pass the line "files-consider"
             }
         },
 
-        //support pug
-        //Instal "Pug (ex-Jade)" plugin if you use phpshtorm
         html: [
             [
                 {name: 'pug', src: ['*.pug'], addWatch: ['pug/**/*.pug', "pug/data.json"], sourcemaps: false},
@@ -98,11 +129,10 @@ require('./index')(function(dev) {
             ]
         ],
 
-        //sass, scss, less, styl, css
         css: [
             [
-                {name: 'sass2', src: ['sass/**/case-dostaevsky.sass', 'sass/**/case-help-to-mama.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css', autoprefixer: true, disabled: false},
-                {name: 'sass', src: ['sass/*.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css', autoprefixer: true, disabled: false}
+                {name: 'sass2', src: ['sass/**/case-dostaevsky.sass', 'sass/**/case-help-to-mama.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css'},
+                {name: 'sass', src: ['sass/*.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css'}
             ],
             {name: 'css', src: ['/**/*.css'], autoprefixer: true}
         ],
@@ -112,15 +142,8 @@ require('./index')(function(dev) {
             {name: 'js', src: '/**/*.js'}
         ],
 
-        //support compress jpg, png, gif, svg, webp
-        //quality: "perfect", "good", "simple", "low". default: "simple"
-        //SVG - http://glivera-team.github.io/svg/2016/06/13/svg-sprites-2.html
-        //SVG - not support js manipulation this mode (https://github.com/jonathantneal/svg4everybody)
-        //SVG - http://savvateev.org/blog/54/
-        //png2x: "-2x" support problem
         images: [
             [
-                //pngStyle вернуть нижнее подчеркивание
                 {name: 'images-sprites', src: ['img/sprite/**/*.{png,svg}'], quality: "good", dest: 'img/sprites', sprite: true,
                     spriteOptions:{
                         png: {name: 'sprite', styleName: '_png-sprite'},
