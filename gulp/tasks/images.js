@@ -26,7 +26,7 @@ module.exports = function(options) {
             styleFormat: 'sass',
             relStyleToImg: '',
             destStyle: 'sass',
-            examples: true,
+            destExamples: 'sprite-examples',
             png: {
                 styleName: '_png-sprite',
                 postfix2x: false,
@@ -227,7 +227,7 @@ module.exports = function(options) {
         tasks.push(stream_compress);
         if(options.webp){tasks.push(stream_webp)}
         if(options.sprite){tasks.push(stream_svg_sprite)}
-        if(options.sprite.destExamples){tasks.push(stream_examples_sprite)}
+        if(options.sprite && options.spriteOpt.destExamples){tasks.push(stream_examples_sprite)}
 
         tasks.forEach(function(el) {
             el.pipe(gulp.dest(dest))

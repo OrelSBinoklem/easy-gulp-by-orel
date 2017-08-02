@@ -4,6 +4,7 @@ const gulp = require('gulp');
 //Понятия:
 //Модуль - gulp модуль выполняющий задачи одного типа
 
+//Если переменная dev = true то это разработка а если false то продакшин
 //Есть 3 уровня опций:
 //1. Глобальный который распространяеться на все задачи (задаёться в свойстве "general")
 /*2. Для модуля задач одного типа (задаёться в свойстве general и свойстве с именем task_имя_задачи).
@@ -23,21 +24,20 @@ const gulp = require('gulp');
 require('./index')(function(dev) {
 return {
     general: {
-        base_src: 'src',     //
-        base_tmp: 'tmp',
-        base_dest: 'public',
+        base_src: 'src',     // (String: "путь" Def:  "."). Базовый путь к папке с исходниками
+        base_tmp: 'tmp',     // (String: "путь" Def:  "."). Базовый путь к папке с временными файлами
+        base_dest: 'public', // (String: "путь" Def:  "."). Базовый путь к папке с конечным результатом
 
-        clean: !dev,
+        clean: !dev,         //•(boolean: true|false, Def:false). Уничтожает папки "base_tmp", "base_dest" перед запуском основных задач
 
-        changed: dev,
+        changed: dev,        //•(boolean: true|false, Notdef). Обрабатывать только те файлы которые изменились
+        minification: !dev,  //•(boolean: true|false, Notdef). Минификация файлов
+        sourcemaps: dev,     //•(boolean: true|false, Notdef). Sourcemaps файлы
 
-        minification: !dev,
-        sourcemaps: dev,
+        //
+        watch: dev,          //•(boolean: true|false, Def:false). Наблюдение за изменениями файлов и перекомпиляция на лету. Установите сохранение каждую 1 сек, если пользуетесь редактором phpshtorm (File | Settings | Appearance and Behavior | System Settings | Save files automatically if application is idle for 1 sec)
 
-        //set 1 sec save if you use phpshtorm (File | Settings | Appearance and Behavior | System Settings | Save files automatically if application is idle for 1 sec)
-        watch: dev,
-
-        browserSync: dev,
+        browserSync: dev,    //•(boolean: true|false, Def:false). Обновляет на лету вёрстку в браузере если изменились файлы. Синхронизирует действия в нескольких браузерах, что позволяет тестировать вёрстку одновременно в нескольких браузерах. Позволяет тестировать вёрстку на мобильных через WIFI
         browserSyncOptions: {},
 
         adaptivePixelPerfect: dev,
@@ -59,7 +59,7 @@ return {
         },
 
         task_js: {
-            coffeeOptions: {bare: true}
+            coffeeOptions: {bare: true}          //  (object: for gulp-coffee plugin,      Def:{bare: true}). Обрабатывать только те картинки которые изменились
         },
 
         task_images: {
@@ -67,15 +67,17 @@ return {
             quality: "simple",                   //• (String: "perfect" | "good" | "simple" | "low", Def: "simple"). webp всеравно жмёться алгоритмом с потерями при "perfect" (решение автора плагина)
             webp: true,                          //• (boolean: true|false,                 Def:false). Все картинки дополнительно жмуться в формат webp и вставляються в ту же папку с такими же именами
             sprite: false,                       //•↓(boolean: true|false,                 Def:false). Просто жмём картинки или создаём спрайт. Вставьте в ваш .htaccess файл код с этой статьи: https://github.com/vincentorback/WebP-images-with-htaccess. Для потдержки webp
-            dest: "",                            // ↓(String: "путь"                       Def: "" куда ложить картики или спрайты (относительно "base_dest")
+            name: "",                            // ↓(String: "имя задачи"                 Notdef)
+            src: "",                             // ↓(minimatch patterns                   Notdef) Откуда брать картинки (относительно "base_src"). Потдерживаються форматы: jpg, png, gif, svg
+            dest: "",                            // ↓(String: "путь"                       Def: "") Куда ложить картики или спрайты (относительно "base_dest")
             spriteOptions: {
                 styleFormat: 'sass',             //  (String: "расширение файла"           Def: "sass"). Для препроцессора стилей в котором будут данные о спрайте
-                destStyle: 'sass',               //  (String: "путь"                       Def: "sass"). для файла препроцессора стилей в котором будут данные о спрайте (относительно "base_tmp")
-                relStyleToImg: '../img/sprites', //  (String: " относительный путь"         Def: ""). путь относительно откомпилированного файла стилей с данными о спрайте к картинке спрайту
-                destExamples: 'sprite-examples', //  Папка в которую поместить полезные миксины и примеры вывода стилей и html для отдельных иконок из спрайтов. (относительно "base_tmp")
+                destStyle: 'sass',               //  (String: "путь"                       Def: "sass"). Для файла препроцессора стилей в котором будут данные о спрайте (относительно "base_tmp")
+                relStyleToImg: '../img/sprites', //  (String: " относительный путь"        Def: ""). Путь относительно откомпилированного файла стилей с данными о спрайте к картинке спрайту
+                destExamples: 'sprite-examples', //  (Boolean: false | String: "путь"      Def: "sass"). Папка в которую поместить полезные миксины и примеры вывода стилей и html для отдельных иконок из спрайтов. (относительно "base_tmp")
                 png: {
                     prefixIcon: "icon-",         //  (String: "имя файла"                  Def: "icon__").Префикс к именам иконок спрайта - используеться в формировании классов стилей иконок
-                    postfix2x: "@2x",            //• (Boolean: false | String: "имя файла" Def: false). Конец имени файлов с двойным разрешением для создания спрайта для ретины или 4k
+                    postfix2x: "@2x",            //• (Boolean: false | String: "имя файла" Def: false). Конец имени файлов с двойным разрешением для создания спрайта для ретины или 4k. "-2x" с такой строкой возникают баги!!!
                     name: 'sprite',              // ↓(String: "имя файла"                  Def: "sprite"). Картинка спрайта
                     styleName: '_png-sprite'     // ↓(String: "имя файла"                  Def: "_png-sprite"). Стили с данными об иконках спрайта
                 },
@@ -107,21 +109,16 @@ return {
         {name: 'css', src: ['/**/*.css'], autoprefixer: true}
     ],
 
-    //support coffee
     js: [
         {name: 'coffee', src: 'coffee/*.coffee', addWatch: "coffee/**/*.coffee", dest: 'js'},
         {name: 'js', src: '/**/*.js'}
     ],
 
-    //support compress jpg, png, gif, svg, webp
-    //quality: "perfect", "good", "simple", "low". default: "simple"
     //SVG - http://glivera-team.github.io/svg/2016/06/13/svg-sprites-2.html
     //SVG - not support js manipulation this mode (https://github.com/jonathantneal/svg4everybody)
     //SVG - http://savvateev.org/blog/54/
-    //png2x: "-2x" support problem
     images: [
         [
-            //pngStyle вернуть нижнее подчеркивание
             {name: 'images-sprites', src: ['img/sprite/**/*.{png,svg}'], quality: "good", dest: 'img/sprites', sprite: true,
                 spriteOptions:{
                     png: {name: 'sprite', styleName: '_png-sprite'},
