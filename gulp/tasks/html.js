@@ -13,11 +13,13 @@ module.exports = function(options) {
     options = extend(true, {
         sourcemaps: false,
         dest: "",
+        seedingData: false,
+        pug: true,
         pugOptions: {
             pretty: '\t'
         },
-        includeHtml: true,
-        includeHtmlOptions: {
+        fileInclude: false,
+        fileIncludeOptions: {
             prefix: '@@',
             basepath: '@file'
         },
@@ -28,8 +30,17 @@ module.exports = function(options) {
         const htmlFilter = $.filter('**/*.{html,htm}', {restore: true});
         const pugFilter = $.filter('**/*.{pug,jade}', {restore: true});
 
-        if(!("data" in options.pugOptions) && "pugData" in options && !!options.pugData) {
-            options.pugOptions.data = JSON.parse(fs.readFileSync('base_src' in options ? pathJoin(process.cwd(), options.base_src, options.pugData) : pathJoin(process.cwd(), options.pugData)));
+        var seedingData;
+        if((options.fileInclude || options.pug) && options.seedingData) {
+            seedingData = JSON.parse(fs.readFileSync('base_src' in options ? pathJoin(process.cwd(), options.base_src, options.seedingData) : pathJoin(process.cwd(), options.seedingData)));
+        }
+
+        if(options.pug && !("data" in options.pugOptions) && options.seedingData) {
+            options.pugOptions.data = seedingData;
+        }
+
+        if(options.fileInclude && !("context" in options.fileIncludeOptions) && options.seedingData) {
+            options.fileIncludeOptions.context = seedingData;
         }
 
         var stream = combine(
@@ -39,9 +50,9 @@ module.exports = function(options) {
 
             $.if(options.changed, $.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest, {extension: '.html'})),
 
-            htmlFilter, $.if(options.includeHtml, combine($.if(options.sourcemaps, $.sourcemaps.init()), $.fileInclude(options.includeHtmlOptions), $.if(options.sourcemaps, $.sourcemaps.write('.')))), htmlFilter.restore,
+            htmlFilter, $.if(options.fileInclude, combine($.if(options.sourcemaps, $.sourcemaps.init()), $.fileInclude(options.fileIncludeOptions), $.if(options.sourcemaps, $.sourcemaps.write('.')))), htmlFilter.restore,
 
-            pugFilter, $.if(options.sourcemaps, $.sourcemaps.init()), $.pug(options.pugOptions), $.if(options.sourcemaps, $.sourcemaps.write('.')), pugFilter.restore
+            pugFilter, $.if(options.pug, combine($.if(options.sourcemaps, $.sourcemaps.init()), $.pug(options.pugOptions), $.if(options.sourcemaps, $.sourcemaps.write('.')))), pugFilter.restore
         ).on('error', $.notify.onError());
 
         stream.pipe(gulp.dest('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest))

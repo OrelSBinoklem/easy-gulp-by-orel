@@ -46,12 +46,13 @@ return {
         },
 
         task_html: {
-            includeHtml: true,        //•↓(boolean: true|false, Def:true). Плагин который просто подключает одни html файлы (с часто используемыми частями кода, например header и footer) в обрабатываемый
-            includeHtmlOptions: {     // ↓(object: for gulp-file-include plugin Def:{prefix: '@@', basepath: '@file'}).
+            seedingData: "seeding-data.json", //  (Boolean: false | String: "путь" Def:false). json файл в котором храняться вспомогательные контентные данные например: текст имён ссылок и/или текст постов. Эти данные будут переданы во все pug и (html обрабатываемые модулем gulp-file-include) файлы... (относительно "base_src").
+            fileInclude: false,        //•↓(boolean: true|false, Def:false). Плагин который просто подключает одни html файлы (с часто используемыми частями кода, например header и footer) в обрабатываемый
+            fileIncludeOptions: {     // ↓(object: for gulp-file-include plugin Def:{prefix: '@@', basepath: '@file'}).
                 prefix: '@@',         //  (String:              Def: "@@"). Префикс перед include, пример: @@include('./header.html')
                 basepath: '@file'     //  (String: "относительный путь" Def: "@file"). Относительно чего искать подключаемый файл. По умолчанию: относительно текущего обрабатываемого файла
             },
-            pugData: "pug/data.json", //• (Boolean: false | String: "путь" Notdef). json файл в котором храняться вспомогательные контентные данные например: текст имён ссылок и/или текст постов. Эти данные будут переданы во все pug файлы... (относительно "base_src"). //Установите "Pug (ex-Jade)" плагин если используете редактор phpshtorm
+            pug: true,                //•↓(boolean: true|false, Def:true). Включить pug. Установите "Pug (ex-Jade)" плагин если используете редактор phpshtorm
             pugOptions: {
                 pretty: '\t'          //  (String:              Def: "\t"). Какими отступами должны делаться вложенные теги при компиляции в html. По умолчанию: табуляция
             },
