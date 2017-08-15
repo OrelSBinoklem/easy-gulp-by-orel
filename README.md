@@ -34,7 +34,7 @@ const gulp = require('gulp');
  * Remember! First, you need to define tasks with more specific file templates and then with more general ones, like the routing system in php frameworks. Because if you pass
  * in the beginning a more general template, then the files will always fall into this task and will never fall into the next task with a more private template*/
 
-require('./index')(function(dev) {
+require('easy-gulp-by-orel')(function(dev) {
 return {
     general: {
         base_src: 'src',              // (String: "путь"       Def:"."). Base path to the source files
@@ -206,7 +206,7 @@ const gulp = require('gulp');
 * Запомните! Вначале надо определять задачи с более частными шаблонами файлов а потом с более общими, наподобие системы роутинга в php фреймворках. Потому что если передать
 * в начале более общий шаблон то файлы всегда будут попадать в эту задачу и никогда непопадут в следующую задачу с более частным шаблоном*/
 
-require('./index')(function(dev) {
+require('easy-gulp-by-orel')(function(dev) {
 return {
     general: {
         base_src: 'src',              // (String: "путь"       Def:"."). Базовый путь к папке с исходниками
