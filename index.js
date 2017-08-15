@@ -10,42 +10,41 @@ const pathJoin = require('./gulp/path.join.js');
 
 var __ = function(config) {
     var isDevelopment;
+
     var taskDependencies = [];
     var spritesTasks = [];
-    var casualTasks = [];
+    var casualTasks = [], namesCasualTasks = /^(html|css|js|images|copy)$/gim;
     var backgroundTasks = [];
 
     function init(maincallback) {
         config = config(isDevelopment);
 
-        var cfgg = config.general;
-        var cfgm = {};
-        for(var key in cfgg) {
-            if(/task_/gim.test(key)) {
-                cfgm[key] = cfgg[key];
-                delete cfgg[key];
-            }
-        }
+        var cfg_g = config.general;
+        var cfg_common_m = config.common_modules;
+        var cfg_all_m = config.all_casual_modules;
+        var cfg_m = config.casual_modules;
+
+        cfg_common_m = extend(true, {}, cfg_g, cfg_common_m);
 
         //Создаём батники для удобства запуска
         require('./gulp/bat')(config, isDevelopment);
 
         //clean
-        if("clean" in cfgg && cfgg.clean) {
+        if("clean" in cfg_common_m && cfg_common_m.clean) {
             taskDependencies.push("clean");
-            lazyRequireTask("clean", "clean", cfgg);
+            lazyRequireTask("clean", "clean", cfg_common_m);
         }
 
         //browserSync - подготовка
-        if("browserSync" in cfgg && cfgg.browserSync) {
+        if("browserSync" in cfg_common_m && cfg_common_m.browserSync) {
             var browserSync = require('browser-sync').create();
         }
 
         //adaptivePixelPerfect - подготовка
-        if("adaptivePixelPerfect" in cfgg && cfgg.adaptivePixelPerfect) {
+        if("adaptivePixelPerfect" in cfg_common_m && cfg_common_m.adaptivePixelPerfect) {
             var adaptivePixelPerfect = require('adaptive-pixel-perfect').create();
 
-            if("browserSync" in cfgg && cfgg.browserSync) {
+            if("browserSync" in cfg_common_m && cfg_common_m.browserSync) {
                 var neededForBrowserSync = {
                     cors: true,
                     middleware: function (req, res, next) {
@@ -53,17 +52,17 @@ var __ = function(config) {
                         next();
                     },
                     socket: {
-                        domain: 'localhost:' + ("browserSyncOptions" in cfgg && 'port' in cfgg.browserSyncOptions ? cfgg.browserSyncOptions.port : 3000)
+                        domain: 'localhost:' + ("browserSyncOptions" in cfg_common_m && 'port' in cfg_common_m.browserSyncOptions ? cfg_common_m.browserSyncOptions.port : 3000)
                     },
                     scriptPath: function (path, port, options) {
                         return "http://" + options.getIn(['socket', 'domain']) + path;
                     }
                 };
 
-                if("browserSyncOptions" in cfgg) {
-                    cfgg.browserSyncOptions = extend(true, neededForBrowserSync, cfgg.browserSyncOptions);
+                if("browserSyncOptions" in cfg_common_m) {
+                    cfg_common_m.browserSyncOptions = extend(true, neededForBrowserSync, cfg_common_m.browserSyncOptions);
                 } else {
-                    cfgg.browserSyncOptions = neededForBrowserSync;
+                    cfg_common_m.browserSyncOptions = neededForBrowserSync;
                 }
             }
 
@@ -71,7 +70,8 @@ var __ = function(config) {
 
         //casual tasks
         for(var name in config) {
-            if(name != "general") {
+            namesCasualTasks.lastIndex = 0;
+            if(namesCasualTasks.test(name)) {
                 if(Array.isArray(config[name])) {
                     config[name].forEach(function(level_two) {
                         if(Array.isArray(level_two)) {
@@ -110,10 +110,10 @@ var __ = function(config) {
 
         function combineGlobal_Task_Local_preConcateBaseSrcInSrcAndAddWatchPattern__options(nameModule, options) {
             //Совмещаем глобальные опции с общими опциями модуля и опциями конкретной задачи
-            if("task_" + nameModule in cfgm) {
-                options = extend(true, {}, cfgg, cfgm["task_" + nameModule], options);
+            if(nameModule in cfg_m) {
+                options = extend(true, {}, cfg_g, cfg_all_m, cfg_m[nameModule], options);
             } else {
-                options = extend(true, {}, cfgg, options);
+                options = extend(true, {}, cfg_g, cfg_all_m, options);
             }
 
             //Прибавляем к пути src модуля путь base_src, если он есть
@@ -129,6 +129,7 @@ var __ = function(config) {
 
         function taskAndWatcher(taskName, nameModule, options) {
             if(!("disabled" in options) || !options.disabled) {
+
                 //dependencies of specific modules
                 options = injectDependenciesOfModules(taskName, nameModule, options);
 
@@ -158,22 +159,22 @@ var __ = function(config) {
         function injectDependenciesOfModules(taskName, nameModule, options) {
             switch(nameModule) {
                 case 'html':
-                    if("browserSync" in cfgg && cfgg.browserSync) {
+                    if("browserSync" in cfg_common_m && cfg_common_m.browserSync) {
                         options.writeHTMLHandler = browserSync.stream;
                     }
                     break;
                 case 'css':
-                    if("browserSync" in cfgg && cfgg.browserSync) {
+                    if("browserSync" in cfg_common_m && cfg_common_m.browserSync) {
                         options.writeStyleStream = browserSync.stream;
                     }
                     break;
                 case 'js':
-                    if("browserSync" in cfgg && cfgg.browserSync) {
+                    if("browserSync" in cfg_common_m && cfg_common_m.browserSync) {
                         options.writeJsStream = browserSync.stream;
                     }
                     break;
                 case 'images':
-                    if("browserSync" in cfgg && cfgg.browserSync) {
+                    if("browserSync" in cfg_common_m && cfg_common_m.browserSync) {
                         options.writeImgStream = browserSync.stream;
                     }
                     break;
@@ -183,15 +184,15 @@ var __ = function(config) {
         }
 
         //browserSync - добавление задачи
-        if("browserSync" in cfgg && cfgg.browserSync) {
+        if("browserSync" in cfg_common_m && cfg_common_m.browserSync) {
             backgroundTasks.push("browser-sync");
-            lazyRequireTask("browser-sync", "browser-sync", extend(true, {}, cfgg, {browserSyncModule: browserSync}));
+            lazyRequireTask("browser-sync", "browser-sync", extend(true, {}, cfg_common_m, {browserSyncModule: browserSync}));
         }
 
         //adaptivePixelPerfect - добавление задачи
-        if("adaptivePixelPerfect" in cfgg && cfgg.adaptivePixelPerfect) {
+        if("adaptivePixelPerfect" in cfg_common_m && cfg_common_m.adaptivePixelPerfect) {
             backgroundTasks.push("adaptive-p-p");
-            lazyRequireTask("adaptive-p-p", "adaptive-p-p", extend(true, {}, cfgg, {adaptivePixelPerfectModule: adaptivePixelPerfect}));
+            lazyRequireTask("adaptive-p-p", "adaptive-p-p", extend(true, {}, cfg_common_m, {adaptivePixelPerfectModule: adaptivePixelPerfect}));
         }
 
         if(backgroundTasks.length){taskDependencies.push(backgroundTasks)}
