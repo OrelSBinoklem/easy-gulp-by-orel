@@ -133,17 +133,17 @@ return {
 
     html: [
         [
-            {name: 'pug', src: ['*.pug'], addWatch: ['pug/**/*.pug', "pug/data.json"], sourcemaps: false},
+            {name: 'pug', src: ['*.pug'], addWatch: ['pug/**/*.pug', "pug/seeding-data.json"], sourcemaps: false},
             {name: 'html', src: ['/**/*.{html,htm}'], sourcemaps: false}
         ]
     ],
 
     css: [
         [
-            {name: 'sass2', src: ['sass/**/case-dostaevsky.sass', 'sass/**/case-help-to-mama.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css', autoprefixer: true, disabled: false},
-            {name: 'sass', src: ['sass/*.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css', autoprefixer: true, disabled: false}
+            {name: 'sass2', src: ['sass/**/case-dostaevsky.sass', 'sass/**/case-help-to-mama.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css'},
+            {name: 'sass', src: ['sass/*.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css'}
         ],
-        {name: 'css', src: ['/**/*.css'], autoprefixer: true}
+        {name: 'css', src: ['/**/*.css']}
     ],
 
     js: [
