@@ -41,6 +41,10 @@ module.exports = function(options) {
             }
         }
     }, options);
+
+    //fix bug
+    if(options.sprite){options.changed = false}
+
     var spriteOpt = options.spriteOptions;
 
     var dest = 'base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest;
