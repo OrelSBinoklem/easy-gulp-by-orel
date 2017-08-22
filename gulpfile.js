@@ -36,7 +36,7 @@ return {
     },
     
     common_modules: {
-        clean: !dev,                  //• (boolean: true|false, Def:false). Destroys the folders "base_tmp", "base_dest" before running the main tasks
+        clean: true,                  //• (boolean: true|false, Def:false). Destroys the folders "base_tmp", "base_dest" before running the main tasks
 
         browserSync: dev,             //• (boolean: true|false, Def:false). Updates on the fly the layout in the browser if the files have changed. Synchronizes actions in several browsers, which allows you to test the layout simultaneously in several browsers. Allows you to test the layout on mobile via WIFI
         browserSyncOptions: {},       //  (object: for browser-sync plugin, Def:notdocumented). By default, different options are set for different settings
@@ -141,7 +141,7 @@ return {
     css: [
         [
             {name: 'sass2', src: ['sass/**/case-dostaevsky.sass', 'sass/**/case-help-to-mama.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css'},
-            {name: 'sass', src: ['sass/*.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css'}
+            {name: 'sass', src: ['sass/*.sass'], addWatch: ["sass/**/{constant,footer,header,mixing}.sass", "../tmp/sass/png-sprite.sass"], dest: 'css'}
         ],
         {name: 'css', src: ['/**/*.css']}
     ],

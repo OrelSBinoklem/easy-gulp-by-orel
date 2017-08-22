@@ -42,9 +42,6 @@ module.exports = function(options) {
         }
     }, options);
 
-    //fix bug
-    if(options.sprite){options.changed = false}
-
     var spriteOpt = options.spriteOptions;
 
     var dest = 'base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest;
@@ -197,7 +194,7 @@ module.exports = function(options) {
 
             $.clone(),
 
-            $.if(options.changed, $.changed(dest)),
+            $.if(options.changed && !options.sprite, $.changed(dest)),
 
             gulp.dest(dest),//fix bug for not save unoptimized images
 
@@ -221,7 +218,7 @@ module.exports = function(options) {
 
                 $.filter('**/*.{jpg,jpeg,png}'),
 
-                $.if(options.changed, $.changed(dest, {extension: '.webp'})),
+                $.if(options.changed && !options.sprite, $.changed(dest, {extension: '.webp'})),
 
                 $.webp(webpQuality)
 
@@ -231,7 +228,6 @@ module.exports = function(options) {
         tasks.push(stream_compress);
         if(options.webp){tasks.push(stream_webp)}
         if(options.sprite){tasks.push(stream_svg_sprite)}
-        if(options.sprite && spriteOpt.destExamples){tasks.push(stream_examples_sprite)}
 
         tasks.forEach(function(el) {
             el.pipe(gulp.dest(dest))
@@ -239,6 +235,8 @@ module.exports = function(options) {
                 .pipe("writeImgStream" in options ? options.writeImgStream() : combine())
                 .on('error', $.notify.onError("Error: <%= error.message %>"));
         });
+
+        if(options.sprite && spriteOpt.destExamples){tasks.push(stream_examples_sprite)}
 
         eventStream.merge(tasks).on('end', callback);
     };

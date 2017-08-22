@@ -354,6 +354,7 @@ gulp.task('production', ['easy:gulp:by:orel:production']);
 
 | Release | Notes |
 | --- | --- |
+| 0.2.3 | Fix bug cached sprites |
 | 0.2.0 | Organized options for groups |
 | 0.1.1 | Added main "seedingData" option for html task and "pug" option |
 | 0.1.0 | Added js module. Add coffee. Added images module. Added sprite creater. Added copy module for copy assets. Added comments for properties |

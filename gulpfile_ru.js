@@ -36,7 +36,7 @@ return {
     },
     
     common_modules: {
-        clean: !dev,                  //• (boolean: true|false, Def:false). Уничтожает папки "base_tmp", "base_dest" перед запуском основных задач
+        clean: true,                  //• (boolean: true|false, Def:false). Уничтожает папки "base_tmp", "base_dest" перед запуском основных задач
 
         browserSync: dev,             //• (boolean: true|false, Def:false). Обновляет на лету вёрстку в браузере если изменились файлы. Синхронизирует действия в нескольких браузерах, что позволяет тестировать вёрстку одновременно в нескольких браузерах. Позволяет тестировать вёрстку на мобильных через WIFI
         browserSyncOptions: {},       //  (object: for browser-sync plugin, Def:notdocumented). По умолчанию задаються разные опции при разных настройках
@@ -141,7 +141,7 @@ return {
     css: [
         [
             {name: 'sass2', src: ['sass/**/case-dostaevsky.sass', 'sass/**/case-help-to-mama.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css'},
-            {name: 'sass', src: ['sass/*.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css'}
+            {name: 'sass', src: ['sass/*.sass'], addWatch: ["sass/**/{constant,footer,header,mixing}.sass", "../tmp/sass/png-sprite.sass"], dest: 'css'}
         ],
         {name: 'css', src: ['/**/*.css']}
     ],
