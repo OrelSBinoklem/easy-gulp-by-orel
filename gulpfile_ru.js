@@ -81,7 +81,7 @@ return {
 
         //Потдерживаються форматы: sass, scss, less, styl, css
         css: {
-            autoprefixer: true,       //• (boolean: true|false, true). Вендорные префиксы, чтобы больше браузеров использовали современные фишки пускай даже иногда с небольшими багами. Например -webkit-transition:
+            autoprefixer: true,       //• (boolean: true|false, Def: true). Вендорные префиксы, чтобы больше браузеров использовали современные фишки пускай даже иногда с небольшими багами. Например -webkit-transition:
             autoprefixerOptions: {    //  (object: for gulp-autoprefixer plugin Def:{browsers: ['last 2 versions'], cascade: false}). Смотрите подробно тут: //https://github.com/ai/browserslist
                 browsers: ['last 10 versions', "Firefox > 40"],
                 cascade: false
@@ -108,6 +108,7 @@ return {
         images: {
             //changed: true,          // &(boolean: true|false,                 Def:true). Обрабатывать только те картинки которые изменились
             quality: "simple",        //• (String: "perfect" | "good" | "simple" | "low", Def: "simple").
+            qualityFolders: true,     //• (boolean: true|false,                 Def:true). Если картинки лежат в корне папки с именем качества ("perfect" | "good" | "simple" | "low") то такие картинки жмуться с качеством соответствующим имени. Потом переносяться в папку на уровень вверх (в папку в которой лежит папка с названием качества т.е. родительская папка).
             webp: true,               //• (boolean: true|false,                 Def:false). Все картинки дополнительно жмуться в формат webp и вставляються в ту же папку с такими же именами. Вставьте в ваш .htaccess файл код с этой статьи: https://github.com/vincentorback/WebP-images-with-htaccess. Для потдержки webp
             sprite: false,            //•↓(boolean: true|false,                 Def:false). Просто жмём картинки или создаём спрайт.
             spriteOptions: {

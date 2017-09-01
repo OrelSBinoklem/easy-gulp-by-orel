@@ -20,6 +20,7 @@ module.exports = function(options) {
         dest: "",
         changed: true,
         quality: "simple",
+        qualityFolders: false,
         webp: false,
         sprite: false,
         spriteOptions: {
@@ -82,163 +83,185 @@ module.exports = function(options) {
         template: __dirname + '/images/svg_sprite_template.' + spriteOpt.styleFormat + '.handlebars'
     };
 
-    var jpegQuality, pngQuality, webpQuality;
-    switch (options.quality) {
+    var qualities = {
+        perfect: {jpeg: {loops: 5, min: 100, max: 100}, png: '100-100', webp: {quality: 100, alphaQuality: 100}},
+        good: {jpeg: {loops: 5, min: 95, max: 95}, png: '90-90', webp: {quality: 95, alphaQuality: 95}},
+        simple: {jpeg: {loops: 5, min: 90, max: 90}, png: '70-70', webp: {quality: 90, alphaQuality: 90}},
+        low: {jpeg: {loops: 5, min: 75, max: 75}, png: '50-50', webp: {quality: 75, alphaQuality: 90}}
+    };
 
-        case 'perfect':
-            jpegQuality = {loops: 5, min: 100, max: 100};
-            pngQuality = '100-100';
-            webpQuality = {quality: 100, alphaQuality: 100};
-            break;
-
-            case 'good':
-                jpegQuality = {loops: 5, min: 95, max: 95};
-                pngQuality = '90-90';
-                webpQuality = {quality: 95, alphaQuality: 95};
-                break;
-
-                case 'simple':
-                    jpegQuality = {loops: 5, min: 90, max: 90};
-                    pngQuality = '70-70';
-                    webpQuality = {quality: 90, alphaQuality: 90};
-                    break;
-
-                    case 'low':
-                        jpegQuality = {loops: 5, min: 75, max: 75};
-                        pngQuality = '50-50';
-                        webpQuality = {quality: 75, alphaQuality: 90};
-                        break;
+    var qualityList;
+    if(options.qualityFolders) {
+        qualityList = ["perfect", "good", "simple", "low"];
+    } else {
+        qualityList = [options.quality];
     }
 
     return function(callback) {
-        var tasks = [];
+        var cycleTasks = [];
+
         var stream_main = gulp.src(options.src)
             .pipe("ignoreFiles" in options ? ignoreFiles.stream(options.ignoreFiles) : combine());
 
-        if(options.sprite) {
-            //PNG sprite
-            var spriteData = stream_main.pipe(combine(
+        if(options.qualityFolders) {
+            var qualityStreams = {
+                perfect: stream_main.pipe($.clone()).pipe($.filter('**/perfect/*.{jpg,png,gif,svg}')),
+                good: stream_main.pipe($.clone()).pipe($.filter('**/good/*.{jpg,png,gif,svg}')),
+                simple: stream_main.pipe($.clone()).pipe($.filter('**/simple/*.{jpg,png,gif,svg}')),
+                low: stream_main.pipe($.clone()).pipe($.filter('**/low/*.{jpg,png,gif,svg}'))
+            }
+
+            qualityStreams[options.quality] = eventStream.merge(qualityStreams[options.quality], stream_main.pipe($.filter(['**/*.{jpg,png,gif,svg}', '!**/{perfect,good,simple,low}/*.{jpg,png,gif,svg}'])));
+        }
+
+        for(var quality in qualityList) {
+            var jpegQuality = qualities[qualityList[quality]].jpeg;
+            var pngQuality = qualities[qualityList[quality]].png;
+            var webpQuality = qualities[qualityList[quality]].webp;
+
+            if(options.qualityFolders) {
+                stream_main = qualityStreams[qualityList[quality]];
+            }
+
+            var tasks = [];
+
+            stream_main = stream_main.pipe(
+                combine(
+                    $.if(options.qualityFolders, through2(function(file, enc, callback){
+                        file.path = file.path.replace(/(perfect|good|simple|low)([\\\/]{1,2}[^\\\/]+)$/, "$2");
+                        callback(null, file);
+                    }))
+                )
+            );
+
+            if(options.sprite) {
+                //PNG sprite
+                var spriteData = stream_main.pipe(combine(
+
+                    $.clone(),
+
+                    $.filter('**/*.png')
+
+                ))
+                    .on('error', $.notify.onError())
+                    .pipe(spritesmith(spritesmithOptions));
+
+                var stream_pngSprite = spriteData.img
+                    .pipe(buffer())
+                    .pipe(through2(function(file, enc, callback){
+                        var pathArr = file.path.split(/[\\\/]/gim);
+                        file.path = pathArr[pathArr.length - 1];
+
+                        callback(null, file);
+                    }));
+                var stream_pngSpriteStyle = spriteData.css.pipe(gulp.dest('base_tmp' in options ? pathJoin(options.base_tmp, spriteOpt.destStyle) : spriteOpt.destStyle))
+                    .pipe(through2(function(file, enc, callback){callback()}))
+                    .on('error', $.notify.onError());
+
+                //SVG sprite
+                var stream_svg_sprite = stream_main.pipe(combine(
+
+                    $.clone(),
+
+                    $.filter('**/*.svg'),
+
+                    $.if(spriteOpt.svg.clearColor, combine(
+                        $.svgmin({
+                            js2svg: {
+                                pretty: true
+                            }
+                        }),
+
+                        $.cheerio({
+                            run: function ($) {
+                                $('[fill]').removeAttr('fill');
+                                $('[stroke]').removeAttr('stroke');
+                                $('[style]').removeAttr('style');
+                            },
+                            parserOptions: {xmlMode: true}
+                        }),
+
+                        $.replace('&gt;', '>')
+                    )),
+
+                    $.svgSprite(svgSpriteOptions),
+
+                    through2(function(file, enc, callback){
+                        var pathArr = file.path.split(/[\\\/]/gim);
+                        file.path = pathArr[pathArr.length - 1];
+                        callback(null, file);
+                    })
+
+                ).on('error', $.notify.onError()));
+                stream_svg_sprite = stream_svg_sprite
+                    .pipe($.if('**/*.{sass,scss,less,styl}', combine(
+                        gulp.dest('base_tmp' in options ? pathJoin(options.base_tmp, spriteOpt.destStyle) : spriteOpt.destStyle),
+                        through2(function(file, enc, callback){callback()})
+                    )))
+                    .on('error', $.notify.onError());
+
+                stream_main = eventStream.merge(stream_pngSprite, stream_pngSpriteStyle);
+
+                if(spriteOpt.destExamples) {
+                    var stream_examples_sprite = gulp.src(__dirname + '/images/_example_*.*')
+                        .pipe($.changed('base_tmp' in options ? pathJoin(options.base_tmp, spriteOpt.destExamples) : spriteOpt.destExamples))
+                        .pipe(gulp.dest('base_tmp' in options ? pathJoin(options.base_tmp, spriteOpt.destExamples) : spriteOpt.destExamples));
+                }
+            }
+
+            //images compress
+            var stream_compress = stream_main.pipe(combine(
 
                 $.clone(),
 
-                $.filter('**/*.png')
+                $.if(options.changed && !options.sprite, $.changed(dest)),
 
-            ))
-                .on('error', $.notify.onError())
-                .pipe(spritesmith(spritesmithOptions));
+                gulp.dest(dest),//fix bug for not save unoptimized images
 
-            var stream_pngSprite = spriteData.img
-                .pipe(buffer())
-                .pipe(through2(function(file, enc, callback){
-                    var pathArr = file.path.split(/[\\\/]/gim);
-                    file.path = pathArr[pathArr.length - 1];
-
-                    callback(null, file);
-                }));
-            var stream_pngSpriteStyle = spriteData.css.pipe(gulp.dest('base_tmp' in options ? pathJoin(options.base_tmp, spriteOpt.destStyle) : spriteOpt.destStyle))
-                .on('error', $.notify.onError());
-
-            //SVG sprite
-            var stream_svg_sprite = stream_main.pipe(combine(
-
-                $.clone(),
-
-                $.filter('**/*.svg'),
-
-                $.if(spriteOpt.svg.clearColor, combine(
-                    $.svgmin({
-                        js2svg: {
-                            pretty: true
-                        }
-                    }),
-
-                    $.cheerio({
-                        run: function ($) {
-                            $('[fill]').removeAttr('fill');
-                            $('[stroke]').removeAttr('stroke');
-                            $('[style]').removeAttr('style');
-                        },
-                        parserOptions: {xmlMode: true}
-                    }),
-
-                    $.replace('&gt;', '>')
-                )),
-
-                $.svgSprite(svgSpriteOptions),
-
-                through2(function(file, enc, callback){
-                    var pathArr = file.path.split(/[\\\/]/gim);
-                    file.path = pathArr[pathArr.length - 1];
-                    callback(null, file);
+                $.imagemin([
+                    $.imagemin.gifsicle({interlaced: true}),
+                    $.imagemin.jpegtran({progressive: true}),
+                    imageminJpegRecompress(jpegQuality),
+                    $.imagemin.svgo(),
+                    $.imagemin.optipng({optimizationLevel: 3}),
+                    pngquant({quality: pngQuality, speed: 5})
+                ], {
+                    verbose: true
                 })
 
-            ).on('error', $.notify.onError()));
-            stream_svg_sprite = stream_svg_sprite
-                .pipe($.if('**/*.{sass,scss,less,styl}', combine(
-                    gulp.dest('base_tmp' in options ? pathJoin(options.base_tmp, spriteOpt.destStyle) : spriteOpt.destStyle),
-                    through2(function(file, enc, callback){callback()})
-                )))
-                .on('error', $.notify.onError());
-
-            stream_main = $.merge(stream_pngSprite, stream_pngSpriteStyle);
-
-            if(spriteOpt.destExamples) {
-                var stream_examples_sprite = gulp.src(__dirname + '/images/_example_*.*')
-                    .pipe($.changed('base_tmp' in options ? pathJoin(options.base_tmp, spriteOpt.destExamples) : spriteOpt.destExamples))
-                    .pipe(gulp.dest('base_tmp' in options ? pathJoin(options.base_tmp, spriteOpt.destExamples) : spriteOpt.destExamples));
-            }
-        }
-
-        //images compress
-        var stream_compress = stream_main.pipe(combine(
-
-            $.clone(),
-
-            $.if(options.changed && !options.sprite, $.changed(dest)),
-
-            gulp.dest(dest),//fix bug for not save unoptimized images
-
-            $.imagemin([
-                $.imagemin.gifsicle({interlaced: true}),
-                $.imagemin.jpegtran({progressive: true}),
-                imageminJpegRecompress(jpegQuality),
-                $.imagemin.svgo(),
-                $.imagemin.optipng({optimizationLevel: 3}),
-                pngquant({quality: pngQuality, speed: 5})
-            ], {
-                verbose: true
-            })
-
-        ).on('error', $.notify.onError("Error: <%= error.message %>")));
-
-        if(options.webp) {
-            var stream_webp = stream_main.pipe(combine(
-
-                $.clone(),
-
-                $.filter('**/*.{jpg,jpeg,png}'),
-
-                $.if(options.changed && !options.sprite, $.changed(dest, {extension: '.webp'})),
-
-                $.webp(webpQuality)
-
             ).on('error', $.notify.onError("Error: <%= error.message %>")));
+
+            if(options.webp) {
+                var stream_webp = stream_main.pipe(combine(
+
+                    $.clone(),
+
+                    $.filter('**/*.{jpg,jpeg,png}'),
+
+                    $.if(options.changed && !options.sprite, $.changed(dest, {extension: '.webp'})),
+
+                    $.webp(webpQuality)
+
+                ).on('error', $.notify.onError("Error: <%= error.message %>")));
+            }
+
+            tasks.push(stream_compress);
+            if(options.webp){tasks.push(stream_webp)}
+            if(options.sprite){tasks.push(stream_svg_sprite)}
+
+            tasks.forEach(function(el) {
+                el.pipe(gulp.dest(dest))
+                    .on('error', $.notify.onError("Error: <%= error.message %>"))
+                    .pipe("writeImgStream" in options ? options.writeImgStream() : combine())
+                    .on('error', $.notify.onError("Error: <%= error.message %>"));
+            });
+
+            if(options.sprite && spriteOpt.destExamples){tasks.push(stream_examples_sprite)}
+
+            cycleTasks = cycleTasks.concat(tasks);
         }
 
-        tasks.push(stream_compress);
-        if(options.webp){tasks.push(stream_webp)}
-        if(options.sprite){tasks.push(stream_svg_sprite)}
-
-        tasks.forEach(function(el) {
-            el.pipe(gulp.dest(dest))
-                .on('error', $.notify.onError("Error: <%= error.message %>"))
-                .pipe("writeImgStream" in options ? options.writeImgStream() : combine())
-                .on('error', $.notify.onError("Error: <%= error.message %>"));
-        });
-
-        if(options.sprite && spriteOpt.destExamples){tasks.push(stream_examples_sprite)}
-
-        eventStream.merge(tasks).on('end', callback);
+        eventStream.merge(cycleTasks).on('end', callback);
     };
 
 };
