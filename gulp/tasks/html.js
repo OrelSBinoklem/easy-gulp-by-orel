@@ -3,6 +3,7 @@
 const $ = require('gulp-load-plugins')();
 const gulp = require('gulp');
 const combine = require('stream-combiner2').obj;
+const through2 = require("through2").obj;
 const extend = require('extend');
 const fs = require("fs");
 const pathJoin = require('../path.join.js');
@@ -18,6 +19,7 @@ module.exports = function(options) {
         pugOptions: {
             pretty: '\t'
         },
+        pugInsertCurPage: true,
         fileInclude: false,
         fileIncludeOptions: {
             prefix: '@@',
@@ -52,15 +54,19 @@ module.exports = function(options) {
 
             htmlFilter, $.if(options.fileInclude, combine($.if(options.sourcemaps, $.sourcemaps.init()), $.fileInclude(options.fileIncludeOptions), $.if(options.sourcemaps, $.sourcemaps.write('.')))), htmlFilter.restore,
 
-            pugFilter, $.if(options.pug, combine($.if(options.sourcemaps, $.sourcemaps.init()), $.pug(options.pugOptions), $.if(options.sourcemaps, $.sourcemaps.write('.')))), pugFilter.restore
+            pugFilter, $.if(options.pug, combine($.if(options.pugInsertCurPage, through2(function(file, enc, callback){
+                var name = /([^\\\/]+)\.(pug|jade)$/.exec(file.path)[1];
+                console.log(name);
+                extend(true, options.pugOptions, {data: {current: name}});
+                callback(null, file);
+            })), combine($.if(options.sourcemaps, $.sourcemaps.init()), $.pug(options.pugOptions), $.if(options.sourcemaps, $.sourcemaps.write('.'))))), pugFilter.restore
         ).on('error', $.notify.onError());
 
-        stream.pipe(gulp.dest('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest))
+        stream = stream.pipe(gulp.dest('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest))
             .on('error', $.notify.onError())
             .pipe("writeHTMLHandler" in options ? options.writeHTMLHandler() : combine())
             .on('error', $.notify.onError());
 
         return stream;
     };
-
 };

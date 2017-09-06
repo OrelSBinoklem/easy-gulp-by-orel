@@ -11,6 +11,7 @@ const gulp = require('gulp');
 //2. For modules working at the level of the entire application (set in the "common_modules" property)
 //3. For all regular modules (set in the "all_casual_modules" property)
 /*4. Module tasks of the same type (set in casual_modules property and property with the name of the module).
+ * The "@" sign at the beginning of a comment of properties denotes a particular specificity of a property or indicates its subordination
  * The sign "•" at the beginning of the properties comment denotes those properties that control the modes of operation of tasks or this plugin (marked at the level on which to use)
  * The "&" sign means that they are common for several modules and they are best set in "all_casual_modules" or "general".
  * The sign "↓" means that these properties are recommended to be set separately for each specific task
@@ -75,6 +76,7 @@ return {
             pugOptions: {
                 pretty: '\t'          //  (String:              Def: "\t"). What indents should be nested tags when compiling in html. Default: tab
             },
+            pugInsertCurPage: true,   //@ (boolean: true|false, Def:true). In this mode, a variable with the name "current" is transferred to each pug file in which there is a name of the executable (the one in which to extend and everything to be included) of the pug file
             //changed: true,          // &(boolean: true|false, Def:true). Process only those files that have changed
             sourcemaps: false         // &(boolean: true|false, Def:false). Sourcemaps files
         },
@@ -108,7 +110,7 @@ return {
         images: {
             //changed: true,          // &(boolean: true|false,                 Def:true). Process only those files that have changed
             quality: "simple",        //• (String: "perfect" | "good" | "simple" | "low", Def: "simple").
-            qualityFolders: true,     //• (boolean: true|false,                 Def:true). If the pictures are in the root of the folder with the quality name ("perfect" | "good" | "simple" | "low") then such pictures should be compressed with the quality of the corresponding name. Then move to the folder on the level up (in the folder in which lies the folder with the name of the quality ie the parent folder).
+            qualityFolders: true,     //@ (boolean: true|false,                 Def:true). If the pictures are in the root of the folder with the quality name ("perfect" | "good" | "simple" | "low") then such pictures should be compressed with the quality of the corresponding name. Then move to the folder on the level up (in the folder in which lies the folder with the name of the quality ie the parent folder).
             webp: true,               //• (boolean: true|false,                 Def:false). All the pictures are additionally hammered into the webp format and inserted into the same folder with the same names. Insert the code from this article into your .htaccess file: https://github.com/vincentorback/WebP-images-with-htaccess. For webp support
             sprite: false,            //•↓(boolean: true|false,                 Def:false). Just click the pictures or create a sprite.
             spriteOptions: {

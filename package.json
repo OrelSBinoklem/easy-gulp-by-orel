@@ -1,6 +1,6 @@
 {
   "name": "easy-gulp-by-orel",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Simple project collector on gulp",
   "author": "orel-s-binoklem",
   "license": "MIT",
@@ -62,5 +62,7 @@
     "stream-combiner2": "^1.1.1",
     "vinyl-buffer": "^1.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "gulp-clone": "^1.0.0"
+  }
 }

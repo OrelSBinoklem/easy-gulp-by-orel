@@ -21,6 +21,7 @@ const gulp = require('gulp');
 //2. For modules working at the level of the entire application (set in the "common_modules" property)
 //3. For all regular modules (set in the "all_casual_modules" property)
 /*4. Module tasks of the same type (set in casual_modules property and property with the name of the module).
+ * The "@" sign at the beginning of a comment of properties denotes a particular specificity of a property or indicates its subordination
  * The sign "•" at the beginning of the properties comment denotes those properties that control the modes of operation of tasks or this plugin (marked at the level on which to use)
  * The "&" sign means that they are common for several modules and they are best set in "all_casual_modules" or "general".
  * The sign "↓" means that these properties are recommended to be set separately for each specific task
@@ -34,7 +35,7 @@ const gulp = require('gulp');
  * Remember! First, you need to define tasks with more specific file templates and then with more general ones, like the routing system in php frameworks. Because if you pass
  * in the beginning a more general template, then the files will always fall into this task and will never fall into the next task with a more private template*/
 
-require('easy-gulp-by-orel')(function(dev) {
+require('./index')(function(dev) {
 return {
     general: {
         base_src: 'src',              // (String: "путь"       Def:"."). Base path to the source files
@@ -44,9 +45,9 @@ return {
         //Set the saving every 1 sec if you use the phpshtorm editor (File | Settings | Appearance and Behavior | System Settings | Save files automatically if application is idle for 1 sec)
         watch: dev                    //• (boolean: true|false, Def:false). Monitor file changes and recompile on the fly.
     },
-
+    
     common_modules: {
-        clean: !dev,                  //• (boolean: true|false, Def:false). Destroys the folders "base_tmp", "base_dest" before running the main tasks
+        clean: true,                  //• (boolean: true|false, Def:false). Destroys the folders "base_tmp", "base_dest" before running the main tasks
 
         browserSync: dev,             //• (boolean: true|false, Def:false). Updates on the fly the layout in the browser if the files have changed. Synchronizes actions in several browsers, which allows you to test the layout simultaneously in several browsers. Allows you to test the layout on mobile via WIFI
         browserSyncOptions: {},       //  (object: for browser-sync plugin, Def:notdocumented). By default, different options are set for different settings
@@ -57,7 +58,7 @@ return {
             design: "design"          //  (String: "path"       Def:"design"). The path to the folder with the pictures of the design
         }
     },
-
+    
     all_casual_modules: {
         changed: dev,                //• (boolean: true|false, Notdef). Process only those files that have changed
         minification: !dev,          //• (boolean: true|false, Notdef). Minification of files
@@ -71,7 +72,7 @@ return {
         //dest              // ↓(String: "path"       Def: ""). Where to put html (relative to "base_dest")
         //addWatch          // ↓(Boolean: false | String: "path" Def: false). Adds files to the monitoring. When changing files, it simply performs the task without processing these files (relative to "base_src")
         //disabled          //•↓(boolean: true|false | String: "files-consider", Def:false). Cancels the task - you may need to use the variable dev - if you want the files in the dependent tasks to be considered and not to be allowed as when the mode is on, then pass the line "files-consider"
-
+    
     casual_modules: {
         //Supported formats: html, htm, pug
         html: {
@@ -85,13 +86,14 @@ return {
             pugOptions: {
                 pretty: '\t'          //  (String:              Def: "\t"). What indents should be nested tags when compiling in html. Default: tab
             },
+            pugInsertCurPage: true,   //@ (boolean: true|false, Def:true). In this mode, a variable with the name "current" is transferred to each pug file in which there is a name of the executable (the one in which to extend and everything to be included) of the pug file
             //changed: true,          // &(boolean: true|false, Def:true). Process only those files that have changed
             sourcemaps: false         // &(boolean: true|false, Def:false). Sourcemaps files
         },
 
         //Supported formats: sass, scss, less, styl, css
         css: {
-            autoprefixer: true,       //• (boolean: true|false, true). Vendor prefixes, so that more browsers use modern chips even though sometimes with small bugs. For example -webkit-transition:
+            autoprefixer: true,       //• (boolean: true|false, Def: true). Vendor prefixes, so that more browsers use modern chips even though sometimes with small bugs. For example -webkit-transition:
             autoprefixerOptions: {    //  (object: for gulp-autoprefixer plugin Def:{browsers: ['last 2 versions'], cascade: false}). See details here: //https://github.com/ai/browserslist
                 browsers: ['last 10 versions', "Firefox > 40"],
                 cascade: false
@@ -118,7 +120,7 @@ return {
         images: {
             //changed: true,          // &(boolean: true|false,                 Def:true). Process only those files that have changed
             quality: "simple",        //• (String: "perfect" | "good" | "simple" | "low", Def: "simple").
-            qualityFolders: true,     //• (boolean: true|false,                 Def:true). If the pictures are in the root of the folder with the quality name ("perfect" | "good" | "simple" | "low") then such pictures should be compressed with the quality of the corresponding name. Then move to the folder on the level up (in the folder in which lies the folder with the name of the quality ie the parent folder).
+            qualityFolders: true,     //@ (boolean: true|false,                 Def:true). If the pictures are in the root of the folder with the quality name ("perfect" | "good" | "simple" | "low") then such pictures should be compressed with the quality of the corresponding name. Then move to the folder on the level up (in the folder in which lies the folder with the name of the quality ie the parent folder).
             webp: true,               //• (boolean: true|false,                 Def:false). All the pictures are additionally hammered into the webp format and inserted into the same folder with the same names. Insert the code from this article into your .htaccess file: https://github.com/vincentorback/WebP-images-with-htaccess. For webp support
             sprite: false,            //•↓(boolean: true|false,                 Def:false). Just click the pictures or create a sprite.
             spriteOptions: {
@@ -141,7 +143,7 @@ return {
             }
         }
     },
-
+    
     html: [
         [
             {name: 'pug', src: ['*.pug'], addWatch: ['pug/**/*.pug', "pug/seeding-data.json"], sourcemaps: false},
@@ -152,7 +154,7 @@ return {
     css: [
         [
             {name: 'sass2', src: ['sass/**/case-dostaevsky.sass', 'sass/**/case-help-to-mama.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css'},
-            {name: 'sass', src: ['sass/*.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css'}
+            {name: 'sass', src: ['sass/*.sass'], addWatch: ["sass/**/{constant,footer,header,mixing}.sass", "../tmp/sass/png-sprite.sass"], dest: 'css'}
         ],
         {name: 'css', src: ['/**/*.css']}
     ],
@@ -194,6 +196,7 @@ const gulp = require('gulp');
 //2. Для модулей работающих на уровне всего приложения (задаються в свойстве "common_modules")
 //3. Для всех обычных модулей (задаються в свойстве "all_casual_modules")
 /*4. Для модуля задач одного типа (задаёться в свойстве casual_modules и свойстве с именем модуля).
+* Знак "@" в начале комментарий свойств обозначает особую специфичность свойства или обозначает его второстепенность
 * Знак "•" в начале комментарий свойств обозначает те свойства которые управляют режимами работы задач или этого плагина (помечаються на том уровне на котором используються)
 * Знак "&" означает что они общие для нескольких модулей и их лучше задавать в "all_casual_modules" или "general".
 * Знак "↓" означает что эти свойства рекомендуеться задавать отдельно для каждой конкретной задачи*/
@@ -207,7 +210,7 @@ const gulp = require('gulp');
 * Запомните! Вначале надо определять задачи с более частными шаблонами файлов а потом с более общими, наподобие системы роутинга в php фреймворках. Потому что если передать
 * в начале более общий шаблон то файлы всегда будут попадать в эту задачу и никогда непопадут в следующую задачу с более частным шаблоном*/
 
-require('easy-gulp-by-orel')(function(dev) {
+require('./index')(function(dev) {
 return {
     general: {
         base_src: 'src',              // (String: "путь"       Def:"."). Базовый путь к папке с исходниками
@@ -217,9 +220,9 @@ return {
         //Установите сохранение каждую 1 сек, если пользуетесь редактором phpshtorm (File | Settings | Appearance and Behavior | System Settings | Save files automatically if application is idle for 1 sec)
         watch: dev                    //• (boolean: true|false, Def:false). Наблюдение за изменениями файлов и перекомпиляция на лету.
     },
-
+    
     common_modules: {
-        clean: !dev,                  //• (boolean: true|false, Def:false). Уничтожает папки "base_tmp", "base_dest" перед запуском основных задач
+        clean: true,                  //• (boolean: true|false, Def:false). Уничтожает папки "base_tmp", "base_dest" перед запуском основных задач
 
         browserSync: dev,             //• (boolean: true|false, Def:false). Обновляет на лету вёрстку в браузере если изменились файлы. Синхронизирует действия в нескольких браузерах, что позволяет тестировать вёрстку одновременно в нескольких браузерах. Позволяет тестировать вёрстку на мобильных через WIFI
         browserSyncOptions: {},       //  (object: for browser-sync plugin, Def:notdocumented). По умолчанию задаються разные опции при разных настройках
@@ -230,7 +233,7 @@ return {
             design: "design"          // (String: "путь"       Def:"design"). Путь к папке с картинками дизайна
         }
     },
-
+    
     all_casual_modules: {
         changed: dev,                //• (boolean: true|false, Notdef). Обрабатывать только те файлы которые изменились
         minification: !dev,          //• (boolean: true|false, Notdef). Минификация файлов
@@ -244,7 +247,7 @@ return {
         //dest              // ↓(String: "путь"       Def: ""). Куда ложить html (относительно "base_dest")
         //addWatch          // ↓(Boolean: false | String: "путь" Def: false). Добавляет в наблюдение файлы. При изменении файлов просто выполняет задачу без обработки этих файлов (относительно "base_src")
         //disabled          //•↓(boolean: true|false | String: "files-consider", Def:false). Отменяет задачу - возможно понадобиться с использованием переменной dev - если хотите чтоб в зависимых задачах файлы учитывались и непропускались как при включённом режиме то передайте строку "files-consider"
-
+    
     casual_modules: {
         //Потдерживаються форматы: html, htm, pug
         html: {
@@ -258,13 +261,14 @@ return {
             pugOptions: {
                 pretty: '\t'          //  (String:              Def: "\t"). Какими отступами должны делаться вложенные теги при компиляции в html. По умолчанию: табуляция
             },
+            pugInsertCurPage: true,   //@ (boolean: true|false, Def:true). В этом режиме в каждый pug файл передаёться переменная с именем "current" в которой находиться имя исполняемого (тот в котором extend и всё инклюдиться) pug файла
             //changed: true,          // &(boolean: true|false, Def:true). Обрабатывать только те файлы которые изменились
             sourcemaps: false         // &(boolean: true|false, Def:false). Sourcemaps файлы
         },
 
         //Потдерживаються форматы: sass, scss, less, styl, css
         css: {
-            autoprefixer: true,       //• (boolean: true|false, true). Вендорные префиксы, чтобы больше браузеров использовали современные фишки пускай даже иногда с небольшими багами. Например -webkit-transition:
+            autoprefixer: true,       //• (boolean: true|false, Def: true). Вендорные префиксы, чтобы больше браузеров использовали современные фишки пускай даже иногда с небольшими багами. Например -webkit-transition:
             autoprefixerOptions: {    //  (object: for gulp-autoprefixer plugin Def:{browsers: ['last 2 versions'], cascade: false}). Смотрите подробно тут: //https://github.com/ai/browserslist
                 browsers: ['last 10 versions', "Firefox > 40"],
                 cascade: false
@@ -291,7 +295,7 @@ return {
         images: {
             //changed: true,          // &(boolean: true|false,                 Def:true). Обрабатывать только те картинки которые изменились
             quality: "simple",        //• (String: "perfect" | "good" | "simple" | "low", Def: "simple").
-            qualityFolders: true,     //• (boolean: true|false,                 Def:true). Если картинки лежат в корне папки с именем качества ("perfect" | "good" | "simple" | "low") то такие картинки жмуться с качеством соответствующим имени. Потом переносяться в папку на уровень вверх (в папку в которой лежит папка с названием качества т.е. родительская папка).
+            qualityFolders: true,     //@ (boolean: true|false,                 Def:true). Если картинки лежат в корне папки с именем качества ("perfect" | "good" | "simple" | "low") то такие картинки жмуться с качеством соответствующим имени. Потом переносяться в папку на уровень вверх (в папку в которой лежит папка с названием качества т.е. родительская папка).
             webp: true,               //• (boolean: true|false,                 Def:false). Все картинки дополнительно жмуться в формат webp и вставляються в ту же папку с такими же именами. Вставьте в ваш .htaccess файл код с этой статьи: https://github.com/vincentorback/WebP-images-with-htaccess. Для потдержки webp
             sprite: false,            //•↓(boolean: true|false,                 Def:false). Просто жмём картинки или создаём спрайт.
             spriteOptions: {
@@ -325,7 +329,7 @@ return {
     css: [
         [
             {name: 'sass2', src: ['sass/**/case-dostaevsky.sass', 'sass/**/case-help-to-mama.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css'},
-            {name: 'sass', src: ['sass/*.sass'], addWatch: "sass/**/{constant,footer,header,mixing}.sass", dest: 'css'}
+            {name: 'sass', src: ['sass/*.sass'], addWatch: ["sass/**/{constant,footer,header,mixing}.sass", "../tmp/sass/png-sprite.sass"], dest: 'css'}
         ],
         {name: 'css', src: ['/**/*.css']}
     ],
@@ -356,6 +360,7 @@ gulp.task('production', ['easy:gulp:by:orel:production']);
 
 | Release | Notes |
 | --- | --- |
+| 0.2.6 | Add param in config "pugInsertCurPage" |
 | 0.2.5 | Add param in config "qualityFolders" |
 | 0.2.3 | Fix bug cached sprites |
 | 0.2.0 | Organized options for groups |
