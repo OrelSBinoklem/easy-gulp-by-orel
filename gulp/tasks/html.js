@@ -56,7 +56,6 @@ module.exports = function(options) {
 
             pugFilter, $.if(options.pug, combine($.if(options.pugInsertCurPage, through2(function(file, enc, callback){
                 var name = /([^\\\/]+)\.(pug|jade)$/.exec(file.path)[1];
-                console.log(name);
                 extend(true, options.pugOptions, {data: {current: name}});
                 callback(null, file);
             })), combine($.if(options.sourcemaps, $.sourcemaps.init()), $.pug(options.pugOptions), $.if(options.sourcemaps, $.sourcemaps.write('.'))))), pugFilter.restore
