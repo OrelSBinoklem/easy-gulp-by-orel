@@ -35,7 +35,7 @@ const gulp = require('gulp');
  * Remember! First, you need to define tasks with more specific file templates and then with more general ones, like the routing system in php frameworks. Because if you pass
  * in the beginning a more general template, then the files will always fall into this task and will never fall into the next task with a more private template*/
 
-require('./index')(function(dev) {
+require('easy-gulp-by-orel')(function(dev) {
 return {
     general: {
         base_src: 'src',              // (String: "путь"       Def:"."). Base path to the source files
@@ -44,6 +44,7 @@ return {
 
         //Set the saving every 1 sec if you use the phpshtorm editor (File | Settings | Appearance and Behavior | System Settings | Save files automatically if application is idle for 1 sec)
         watch: dev                    //• (boolean: true|false, Def:false). Monitor file changes and recompile on the fly.
+        //modifyTasks:                //@ (function: function(taskDependencies) return new taskDependencies, Notdef). The ability to modify a two-level array of tasks to add their tasks or remove standard ones. This array is processed by the "run-sequence" module in the "easy-gulp-by-orel"
     },
     
     common_modules: {
@@ -210,7 +211,7 @@ const gulp = require('gulp');
 * Запомните! Вначале надо определять задачи с более частными шаблонами файлов а потом с более общими, наподобие системы роутинга в php фреймворках. Потому что если передать
 * в начале более общий шаблон то файлы всегда будут попадать в эту задачу и никогда непопадут в следующую задачу с более частным шаблоном*/
 
-require('./index')(function(dev) {
+require('easy-gulp-by-orel')(function(dev) {
 return {
     general: {
         base_src: 'src',              // (String: "путь"       Def:"."). Базовый путь к папке с исходниками
@@ -219,6 +220,7 @@ return {
 
         //Установите сохранение каждую 1 сек, если пользуетесь редактором phpshtorm (File | Settings | Appearance and Behavior | System Settings | Save files automatically if application is idle for 1 sec)
         watch: dev                    //• (boolean: true|false, Def:false). Наблюдение за изменениями файлов и перекомпиляция на лету.
+        //modifyTasks:                //@ (function: function(taskDependencies) return new taskDependencies, Notdef). Возможность модифицировать двухуровневый массив задач для добавления своих задач или удаления стандартных. Этот массив обрабатываеться модулем "run-sequence" в ядре "easy-gulp-by-orel"
     },
     
     common_modules: {
@@ -360,6 +362,7 @@ gulp.task('production', ['easy:gulp:by:orel:production']);
 
 | Release | Notes |
 | --- | --- |
+| 0.2.8 | Add param in config "modifyTasks" |
 | 0.2.6 | Add param in config "pugInsertCurPage" |
 | 0.2.5 | Add param in config "qualityFolders" |
 | 0.2.3 | Fix bug cached sprites |

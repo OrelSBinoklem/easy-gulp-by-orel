@@ -34,6 +34,7 @@ return {
 
         //Установите сохранение каждую 1 сек, если пользуетесь редактором phpshtorm (File | Settings | Appearance and Behavior | System Settings | Save files automatically if application is idle for 1 sec)
         watch: dev                    //• (boolean: true|false, Def:false). Наблюдение за изменениями файлов и перекомпиляция на лету.
+        //modifyTasks:                //@ (function: function(taskDependencies) return new taskDependencies, Notdef). Возможность модифицировать двухуровневый массив задач для добавления своих задач или удаления стандартных. Этот массив обрабатываеться модулем "run-sequence" в ядре "easy-gulp-by-orel"
     },
     
     common_modules: {

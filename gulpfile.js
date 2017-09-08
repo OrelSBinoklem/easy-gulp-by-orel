@@ -34,6 +34,7 @@ return {
 
         //Set the saving every 1 sec if you use the phpshtorm editor (File | Settings | Appearance and Behavior | System Settings | Save files automatically if application is idle for 1 sec)
         watch: dev                    //• (boolean: true|false, Def:false). Monitor file changes and recompile on the fly.
+        //modifyTasks:                //@ (function: function(taskDependencies) return new taskDependencies, Notdef). The ability to modify a two-level array of tasks to add their tasks or remove standard ones. This array is processed by the "run-sequence" module in the "easy-gulp-by-orel"
     },
     
     common_modules: {
