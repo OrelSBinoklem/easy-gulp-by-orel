@@ -197,7 +197,7 @@ var __ = function(config) {
 
         if(backgroundTasks.length){taskDependencies.push(backgroundTasks)}
 
-        if("modifyTasks" in config){taskDependencies = config.modifyTasks(taskDependencies)}
+        if("modifyTasks" in cfg_g){taskDependencies = cfg_g.modifyTasks(taskDependencies)}
 
         taskDependencies.push(function(callback) {
             maincallback();
