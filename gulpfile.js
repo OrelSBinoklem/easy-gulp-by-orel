@@ -110,7 +110,7 @@ return {
         //Display svg icons in Windows Explorer - http://savvateev.org/blog/54/
         images: {
             //changed: true,          // &(boolean: true|false,                 Def:true). Process only those files that have changed
-            quality: "simple",        //• (String: "perfect" | "good" | "simple" | "low", Def: "simple").
+            quality: "normal",        //• (String: "perfect" | "good" | "normal" | "simple" | "low", Def: "normal").
             qualityFolders: true,     //@ (boolean: true|false,                 Def:true). If the pictures are in the root of the folder with the quality name ("perfect" | "good" | "simple" | "low") then such pictures should be compressed with the quality of the corresponding name. Then move to the folder on the level up (in the folder in which lies the folder with the name of the quality ie the parent folder).
             webp: true,               //• (boolean: true|false,                 Def:false). All the pictures are additionally hammered into the webp format and inserted into the same folder with the same names. Insert the code from this article into your .htaccess file: https://github.com/vincentorback/WebP-images-with-htaccess. For webp support
             sprite: false,            //•↓(boolean: true|false,                 Def:false). Just click the pictures or create a sprite.

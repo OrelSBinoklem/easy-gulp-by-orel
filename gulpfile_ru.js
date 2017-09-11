@@ -110,7 +110,7 @@ return {
         //Отображать svg иконки в проводнике windows - http://savvateev.org/blog/54/
         images: {
             //changed: true,          // &(boolean: true|false,                 Def:true). Обрабатывать только те картинки которые изменились
-            quality: "simple",        //• (String: "perfect" | "good" | "simple" | "low", Def: "simple").
+            quality: "normal",        //• (String: "perfect" | "good" | "normal" | "simple" | "low", Def: "normal").
             qualityFolders: true,     //@ (boolean: true|false,                 Def:true). Если картинки лежат в корне папки с именем качества ("perfect" | "good" | "simple" | "low") то такие картинки жмуться с качеством соответствующим имени. Потом переносяться в папку на уровень вверх (в папку в которой лежит папка с названием качества т.е. родительская папка).
             webp: true,               //• (boolean: true|false,                 Def:false). Все картинки дополнительно жмуться в формат webp и вставляються в ту же папку с такими же именами. Вставьте в ваш .htaccess файл код с этой статьи: https://github.com/vincentorback/WebP-images-with-htaccess. Для потдержки webp
             sprite: false,            //•↓(boolean: true|false,                 Def:false). Просто жмём картинки или создаём спрайт.

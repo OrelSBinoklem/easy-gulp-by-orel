@@ -19,7 +19,7 @@ module.exports = function(options) {
     options = extend(true, {
         dest: "",
         changed: true,
-        quality: "simple",
+        quality: "normal",
         qualityFolders: false,
         webp: false,
         sprite: false,
@@ -85,14 +85,15 @@ module.exports = function(options) {
 
     var qualities = {
         perfect: {jpeg: {loops: 5, min: 100, max: 100}, png: '100-100', webp: {quality: 100, alphaQuality: 100}},
-        good: {jpeg: {loops: 5, min: 95, max: 95}, png: '90-90', webp: {quality: 95, alphaQuality: 95}},
-        simple: {jpeg: {loops: 5, min: 90, max: 90}, png: '70-70', webp: {quality: 90, alphaQuality: 90}},
-        low: {jpeg: {loops: 5, min: 75, max: 75}, png: '50-50', webp: {quality: 75, alphaQuality: 90}}
+        good:    {jpeg: {loops: 5, min: 95, max: 95}, png: '90-90', webp: {quality: 95, alphaQuality: 95}},
+        normal:  {jpeg: {loops: 5, min: 90, max: 90}, png: '70-70', webp: {quality: 90, alphaQuality: 90}},
+        simple:  {jpeg: {loops: 5, min: 75, max: 75}, png: '50-50', webp: {quality: 75, alphaQuality: 90}},
+        low:     {jpeg: {loops: 5, min: 60, max: 60}, png: '30-30', webp: {quality: 60, alphaQuality: 80}}
     };
 
     var qualityList;
     if(options.qualityFolders) {
-        qualityList = ["perfect", "good", "simple", "low"];
+        qualityList = ["perfect", "good", "normal", "simple", "low"];
     } else {
         qualityList = [options.quality];
     }
@@ -107,11 +108,12 @@ module.exports = function(options) {
             var qualityStreams = {
                 perfect: stream_main.pipe($.clone()).pipe($.filter('**/perfect/*.{jpg,png,gif,svg}')),
                 good: stream_main.pipe($.clone()).pipe($.filter('**/good/*.{jpg,png,gif,svg}')),
+                normal: stream_main.pipe($.clone()).pipe($.filter('**/normal/*.{jpg,png,gif,svg}')),
                 simple: stream_main.pipe($.clone()).pipe($.filter('**/simple/*.{jpg,png,gif,svg}')),
                 low: stream_main.pipe($.clone()).pipe($.filter('**/low/*.{jpg,png,gif,svg}'))
             }
 
-            qualityStreams[options.quality] = eventStream.merge(qualityStreams[options.quality], stream_main.pipe($.filter(['**/*.{jpg,png,gif,svg}', '!**/{perfect,good,simple,low}/*.{jpg,png,gif,svg}'])));
+            qualityStreams[options.quality] = eventStream.merge(qualityStreams[options.quality], stream_main.pipe($.filter(['**/*.{jpg,png,gif,svg}', '!**/{perfect,good,normal,simple,low}/*.{jpg,png,gif,svg}'])));
         }
 
         for(var quality in qualityList) {
@@ -128,7 +130,7 @@ module.exports = function(options) {
             stream_main = stream_main.pipe(
                 combine(
                     $.if(options.qualityFolders, through2(function(file, enc, callback){
-                        file.path = file.path.replace(/(perfect|good|simple|low)([\\\/]{1,2}[^\\\/]+)$/, "$2");
+                        file.path = file.path.replace(/(perfect|good|normal|simple|low)([\\\/]{1,2}[^\\\/]+)$/, "$2");
                         callback(null, file);
                     }))
                 )
