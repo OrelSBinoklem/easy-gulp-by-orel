@@ -53,7 +53,8 @@ return {
     all_casual_modules: {
         changed: dev,                //• (boolean: true|false, Notdef). Обрабатывать только те файлы которые изменились
         minification: !dev,          //• (boolean: true|false, Notdef). Минификация файлов
-        sourcemaps: dev              //• (boolean: true|false, Notdef). Sourcemaps файлы
+        sourcemaps: dev,             //• (boolean: true|false, Notdef). Sourcemaps файлы
+        rigger: false                //• (boolean: true|false, false). Вставка кода внешних файлов в обрабатываемый файл
     },
 
     //У всех модулей есть следующие опции:
@@ -80,6 +81,7 @@ return {
             pugInsertCurPage: true,   //@ (boolean: true|false, Def:true). В этом режиме в каждый pug файл передаёться переменная с именем "current" в которой находиться имя исполняемого (тот в котором extend и всё инклюдиться) pug файла
             //changed: true,          // &(boolean: true|false, Def:true). Обрабатывать только те файлы которые изменились
             sourcemaps: false         // &(boolean: true|false, Def:false). Sourcemaps файлы
+            //rigger: false           // &(boolean: true|false, false). Вставка кода внешних файлов в обрабатываемый файл
         },
 
         //Потдерживаються форматы: sass, scss, less, styl, css
@@ -92,6 +94,7 @@ return {
             //changed: true,          // &(boolean: true|false, Def:true). Обрабатывать только те файлы которые изменились
             //sourcemaps: false,      // &(boolean: true|false, Def:false). Sourcemaps файлы
             //minification: true      //  (boolean: true|false, true). Минификация файлов
+            //rigger: false           // &(boolean: true|false, false). Вставка кода внешних файлов в обрабатываемый файл
         },
 
         //Потдерживаються форматы: js, coffee
@@ -102,6 +105,7 @@ return {
             //changed: true,          // &(boolean: true|false, Def:true). Обрабатывать только те файлы которые изменились
             //sourcemaps: false,      // &(boolean: true|false, Def:false). Sourcemaps файлы
             //minification: true      //  (boolean: true|false, true). Минификация файлов
+            //rigger: false           // &(boolean: true|false, false). Вставка кода внешних файлов в обрабатываемый файл
         },
 
         //Потдерживаються форматы: jpg, png, gif, svg

@@ -63,7 +63,8 @@ return {
     all_casual_modules: {
         changed: dev,                //• (boolean: true|false, Notdef). Process only those files that have changed
         minification: !dev,          //• (boolean: true|false, Notdef). Minification of files
-        sourcemaps: dev              //• (boolean: true|false, Notdef). Sourcemaps files
+        sourcemaps: dev,             //• (boolean: true|false, Notdef). Sourcemaps files
+        rigger: false                //• (boolean: true|false, false). Inserting the code of external files into the file being processed
     },
 
     //All modules have the following options:
@@ -90,6 +91,7 @@ return {
             pugInsertCurPage: true,   //@ (boolean: true|false, Def:true). In this mode, a variable with the name "current" is transferred to each pug file in which there is a name of the executable (the one in which to extend and everything to be included) of the pug file
             //changed: true,          // &(boolean: true|false, Def:true). Process only those files that have changed
             sourcemaps: false         // &(boolean: true|false, Def:false). Sourcemaps files
+            //rigger: false           // &(boolean: true|false, false). Inserting the code of external files into the file being processed
         },
 
         //Supported formats: sass, scss, less, styl, css
@@ -102,6 +104,7 @@ return {
             //changed: true,          // &(boolean: true|false, Def:true). Process only those files that have changed
             //sourcemaps: false,      // &(boolean: true|false, Def:false). Sourcemaps файлы
             //minification: true      //  (boolean: true|false, true). Минификация files
+            //rigger: false           // &(boolean: true|false, false). Inserting the code of external files into the file being processed
         },
 
         //Supported formats: js, coffee
@@ -112,6 +115,7 @@ return {
             //changed: true,          // &(boolean: true|false, Def:true). Process only those files that have changed
             //sourcemaps: false,      // &(boolean: true|false, Def:false). Sourcemaps файлы
             //minification: true      //  (boolean: true|false, true). Минификация files
+            //rigger: false           // &(boolean: true|false, false). Inserting the code of external files into the file being processed
         },
 
         //Supported formats: jpg, png, gif, svg
@@ -239,7 +243,8 @@ return {
     all_casual_modules: {
         changed: dev,                //• (boolean: true|false, Notdef). Обрабатывать только те файлы которые изменились
         minification: !dev,          //• (boolean: true|false, Notdef). Минификация файлов
-        sourcemaps: dev              //• (boolean: true|false, Notdef). Sourcemaps файлы
+        sourcemaps: dev,             //• (boolean: true|false, Notdef). Sourcemaps файлы
+        rigger: false                //• (boolean: true|false, false). Вставка кода внешних файлов в обрабатываемый файл
     },
 
     //У всех модулей есть следующие опции:
@@ -266,6 +271,7 @@ return {
             pugInsertCurPage: true,   //@ (boolean: true|false, Def:true). В этом режиме в каждый pug файл передаёться переменная с именем "current" в которой находиться имя исполняемого (тот в котором extend и всё инклюдиться) pug файла
             //changed: true,          // &(boolean: true|false, Def:true). Обрабатывать только те файлы которые изменились
             sourcemaps: false         // &(boolean: true|false, Def:false). Sourcemaps файлы
+            //rigger: false           // &(boolean: true|false, false). Вставка кода внешних файлов в обрабатываемый файл
         },
 
         //Потдерживаються форматы: sass, scss, less, styl, css
@@ -278,6 +284,7 @@ return {
             //changed: true,          // &(boolean: true|false, Def:true). Обрабатывать только те файлы которые изменились
             //sourcemaps: false,      // &(boolean: true|false, Def:false). Sourcemaps файлы
             //minification: true      //  (boolean: true|false, true). Минификация файлов
+            //rigger: false           // &(boolean: true|false, false). Вставка кода внешних файлов в обрабатываемый файл
         },
 
         //Потдерживаються форматы: js, coffee
@@ -288,6 +295,7 @@ return {
             //changed: true,          // &(boolean: true|false, Def:true). Обрабатывать только те файлы которые изменились
             //sourcemaps: false,      // &(boolean: true|false, Def:false). Sourcemaps файлы
             //minification: true      //  (boolean: true|false, true). Минификация файлов
+            //rigger: false           // &(boolean: true|false, false). Вставка кода внешних файлов в обрабатываемый файл
         },
 
         //Потдерживаються форматы: jpg, png, gif, svg
@@ -362,6 +370,7 @@ gulp.task('production', ['easy:gulp:by:orel:production']);
 
 | Release | Notes |
 | --- | --- |
+| 0.2.11 | Add "rigger" option, fix minification js |
 | 0.2.10 | Images compress add and change qualities: "simple" -> "normal", "low" -> "simple", "low" - down quality |
 | 0.2.8 | Add param in config "modifyTasks" |
 | 0.2.6 | Add param in config "pugInsertCurPage" |

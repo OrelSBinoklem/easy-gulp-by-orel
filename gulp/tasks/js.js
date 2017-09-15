@@ -2,6 +2,7 @@
 
 const $ = require('gulp-load-plugins')();
 const gulp = require('gulp');
+const uglify = require('gulp-uglify');
 const combine = require('stream-combiner2').obj;
 const extend = require('extend');
 const pathJoin = require('../path.join.js');
@@ -16,7 +17,8 @@ module.exports = function(options) {
         coffeeOptions: {
             bare: true
         },
-        changed: true
+        changed: true,
+        rigger: false
     }, options);
 
     return function() {
@@ -31,7 +33,11 @@ module.exports = function(options) {
 
             $.if(options.sourcemaps, $.sourcemaps.init()),
 
+            $.if(options.rigger, $.rigger()),
+
             coffeeFilter, $.coffee(options.coffeeOptions), coffeeFilter.restore,
+
+            $.if(options.minification, $.uglify()),
 
             $.if(options.sourcemaps, $.sourcemaps.write('.'))
         ).on('error', $.notify.onError());

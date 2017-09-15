@@ -18,7 +18,8 @@ module.exports = function(options) {
             browsers: ['last 10 versions', "Firefox > 40"],
             cascade: false
         },
-        changed: true
+        changed: true,
+        rigger: false
     }, options);
 
     return function() {
@@ -38,6 +39,8 @@ module.exports = function(options) {
                 stylFilter, $.stylus(), stylFilter.restore,
                 sassFilter, $.sass(), sassFilter.restore,
                 lessFilter, $.less(), lessFilter.restore,
+
+                $.if(options.rigger, $.rigger()),
 
                 $.if(options.autoprefixer, $.autoprefixer(options.autoprefixerOptions)),
                 $.if(options.minification, $.cleanCss()),

@@ -25,7 +25,8 @@ module.exports = function(options) {
             prefix: '@@',
             basepath: '@file'
         },
-        changed: true
+        changed: true,
+        rigger: false
     }, options);
 
     return function() {
@@ -52,13 +53,19 @@ module.exports = function(options) {
 
             $.if(options.changed, $.changed('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest, {extension: '.html'})),
 
-            htmlFilter, $.if(options.fileInclude, combine($.if(options.sourcemaps, $.sourcemaps.init()), $.fileInclude(options.fileIncludeOptions), $.if(options.sourcemaps, $.sourcemaps.write('.')))), htmlFilter.restore,
+            $.if(options.sourcemaps, $.sourcemaps.init()),
+
+            htmlFilter, $.if(options.fileInclude, combine($.fileInclude(options.fileIncludeOptions))), htmlFilter.restore,
 
             pugFilter, $.if(options.pug, combine($.if(options.pugInsertCurPage, through2(function(file, enc, callback){
                 var name = /([^\\\/]+)\.(pug|jade)$/.exec(file.path)[1];
                 extend(true, options.pugOptions, {data: {current: name}});
                 callback(null, file);
-            })), combine($.if(options.sourcemaps, $.sourcemaps.init()), $.pug(options.pugOptions), $.if(options.sourcemaps, $.sourcemaps.write('.'))))), pugFilter.restore
+            })), combine($.pug(options.pugOptions)))), pugFilter.restore,
+
+            $.if(options.rigger, $.rigger()),
+
+            $.if(options.sourcemaps, $.sourcemaps.write('.'))
         ).on('error', $.notify.onError());
 
         stream = stream.pipe(gulp.dest('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest))
