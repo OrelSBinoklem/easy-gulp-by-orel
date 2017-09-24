@@ -1,6 +1,6 @@
 {
   "name": "easy-gulp-by-orel",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "Simple project collector on gulp",
   "author": "orel-s-binoklem",
   "license": "MIT",
@@ -21,7 +21,7 @@
     "gulp"
   ],
   "dependencies": {
-    "adaptive-pixel-perfect": "^0.5.0",
+    "adaptive-pixel-perfect": "^0.5.7",
     "browser-sync": "^2.18.12",
     "del": "^2.2.2",
     "event-stream": "^3.3.4",

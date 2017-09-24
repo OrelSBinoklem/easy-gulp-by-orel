@@ -54,7 +54,7 @@ return {
         changed: dev,                //• (boolean: true|false, Notdef). Обрабатывать только те файлы которые изменились
         minification: !dev,          //• (boolean: true|false, Notdef). Минификация файлов
         sourcemaps: dev,             //• (boolean: true|false, Notdef). Sourcemaps файлы
-        rigger: false                //• (boolean: true|false, false). Вставка кода внешних файлов в обрабатываемый файл
+        rigger: false                //@ (boolean: true|false, false). Вставка кода внешних файлов в обрабатываемый файл
     },
 
     //У всех модулей есть следующие опции:

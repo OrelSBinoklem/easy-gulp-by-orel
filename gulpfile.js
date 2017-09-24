@@ -54,7 +54,7 @@ return {
         changed: dev,                //• (boolean: true|false, Notdef). Process only those files that have changed
         minification: !dev,          //• (boolean: true|false, Notdef). Minification of files
         sourcemaps: dev,             //• (boolean: true|false, Notdef). Sourcemaps files
-        rigger: false                //• (boolean: true|false, false). Inserting the code of external files into the file being processed
+        rigger: false                //@ (boolean: true|false, false). Inserting the code of external files into the file being processed
     },
 
     //All modules have the following options:

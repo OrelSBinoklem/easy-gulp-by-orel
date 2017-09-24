@@ -38,12 +38,20 @@ module.exports = function(options) {
             seedingData = JSON.parse(fs.readFileSync('base_src' in options ? pathJoin(process.cwd(), options.base_src, options.seedingData) : pathJoin(process.cwd(), options.seedingData)));
         }
 
-        if(options.pug && !("data" in options.pugOptions) && options.seedingData) {
-            options.pugOptions.data = seedingData;
+        if(options.pug && options.seedingData) {
+            if("data" in options.pugOptions) {
+                extend(true, options.pugOptions.data, seedingData);
+            } else {
+                options.pugOptions.data = seedingData;
+            }
         }
 
-        if(options.fileInclude && !("context" in options.fileIncludeOptions) && options.seedingData) {
-            options.fileIncludeOptions.context = seedingData;
+        if(options.fileInclude && options.seedingData) {
+            if("context" in options.fileIncludeOptions) {
+                extend(true, options.fileIncludeOptions.context, seedingData);
+            } else {
+                options.fileIncludeOptions.context = seedingData;
+            }
         }
 
         var stream = combine(
