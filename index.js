@@ -160,7 +160,8 @@ var __ = function(config) {
             switch(nameModule) {
                 case 'html':
                     if("browserSync" in cfg_common_m && cfg_common_m.browserSync) {
-                        options.writeHTMLHandler = browserSync.stream;
+                        //options.writeHTMLHandler = browserSync.stream;//Когда редактируеш библиотечный файл меняються все файлы и browsersync релоадит браузер по много раз
+                        options.endCallback = browserSync.reload;
                     }
                     break;
                 case 'css':

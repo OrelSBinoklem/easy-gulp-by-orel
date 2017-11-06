@@ -85,10 +85,10 @@ module.exports = function(options) {
 
     var qualities = {
         perfect: {jpeg: {loops: 5, min: 100, max: 100}, png: '100-100', webp: {quality: 100, alphaQuality: 100}},
-        good:    {jpeg: {loops: 5, min: 95, max: 95}, png: '90-90', webp: {quality: 95, alphaQuality: 95}},
-        normal:  {jpeg: {loops: 5, min: 90, max: 90}, png: '70-70', webp: {quality: 90, alphaQuality: 90}},
-        simple:  {jpeg: {loops: 5, min: 75, max: 75}, png: '50-50', webp: {quality: 75, alphaQuality: 90}},
-        low:     {jpeg: {loops: 5, min: 60, max: 60}, png: '30-30', webp: {quality: 60, alphaQuality: 80}}
+        good:    {jpeg: {loops: 5, min: 95,  max: 95},  png: '90-90',   webp: {quality: 95,  alphaQuality: 95}},
+        normal:  {jpeg: {loops: 5, min: 90,  max: 90},  png: '70-70',   webp: {quality: 90,  alphaQuality: 90}},
+        simple:  {jpeg: {loops: 5, min: 75,  max: 75},  png: '50-50',   webp: {quality: 75,  alphaQuality: 90}},
+        low:     {jpeg: {loops: 5, min: 60,  max: 60},  png: '30-30',   webp: {quality: 60,  alphaQuality: 80}}
     };
 
     var qualityList;

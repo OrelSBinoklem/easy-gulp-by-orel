@@ -79,7 +79,8 @@ module.exports = function(options) {
         stream = stream.pipe(gulp.dest('base_dest' in options ? pathJoin(options.base_dest, options.dest) : options.dest))
             .on('error', $.notify.onError())
             .pipe("writeHTMLHandler" in options ? options.writeHTMLHandler() : combine())
-            .on('error', $.notify.onError());
+            .on('error', $.notify.onError())
+            .on('end', "endCallback" in options ? options.endCallback : function(){});
 
         return stream;
     };
