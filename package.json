@@ -21,7 +21,7 @@
     "gulp"
   ],
   "dependencies": {
-    "adaptive-pixel-perfect": "^0.5.7",
+    "adaptive-pixel-perfect": "^0.5.8",
     "browser-sync": "^2.18.12",
     "del": "^2.2.2",
     "event-stream": "^3.3.4",
